@@ -236,6 +236,8 @@ button.HighlightrSettingsButton {
   padding: 4px 14px;
   border-radius: 6px;
   height: fit-content;
+  flex-shrink: 0;
+  white-space: nowrap;
 }
 
 button.HighlightrSettingsButton svg {
@@ -246,7 +248,10 @@ button.HighlightrSettingsButton svg {
 
 .highlighter-settings-color {
   width: 150px;
-  color: var(--text-normal);
+}
+
+.highlighter-settings-value {
+  width: 120px;
 }
 
 .highlighterplugin-setting-item {
@@ -254,25 +259,12 @@ button.HighlightrSettingsButton svg {
 }
 
 .highlighterplugin-setting-item .setting-item-control {
-  justify-content: space-between;
+  justify-content: flex-end;
   margin-top: 12px;
-  align-content: center;
   align-items: flex-end;
-  grid-gap: 6px;
+  gap: 6px;
+  flex-wrap: wrap;
 }
-
-.modal.mod-settings
-  button:not(.mod-cta):not(.mod-warning).HighlightrSettingsButton.HighlightrSettingsButtonAdd,
-button:not(.mod-cta):not(.mod-warning).HighlightrSettingsButton.HighlightrSettingsButtonAdd {
-  background-color: var(--interactive-accent);
-}
-
-.modal.mod-settings
-  button:not(.mod-cta):not(.mod-warning).HighlightrSettingsButton.HighlightrSettingsButtonDelete,
-button:not(.mod-cta):not(.mod-warning).HighlightrSettingsButton.HighlightrSettingsButtonDelete {
-  background-color: #989cab;
-}
-
 /**/
 .highlighter-setting-icon {
   display: flex;
@@ -322,6 +314,7 @@ button:not(.mod-cta):not(.mod-warning).HighlightrSettingsButton.HighlightrSettin
   min-width: 0;
   padding: 18px;
   border-top: none !important;
+  flex-wrap: wrap;
 }
 
 .highlightr-edit-input {
@@ -418,7 +411,7 @@ PICKR 1.8.2 MIT | https://github.com/Simonwep/pickr
   cursor: pointer;
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto",
     "Helvetica Neue", Arial, sans-serif;
-  border-radius: 0.15em;
+  border-radius: 50%;
   background: url('data:image/svg+xml;utf8, <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 50 50" stroke="%2342445A" stroke-width="5px" stroke-linecap="round"><path d="M45,45L5,5"></path><path d="M45,5L5,45"></path></svg>')
     no-repeat center;
   background-size: 0;
@@ -433,7 +426,7 @@ PICKR 1.8.2 MIT | https://github.com/Simonwep/pickr
   height: 100%;
   background: url('data:image/svg+xml;utf8, <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2 2"><path fill="white" d="M1,0H2V1H1V0ZM0,1H1V2H0V1Z"/><path fill="gray" d="M0,0H1V1H0V0ZM1,1H2V2H1V1Z"/></svg>');
   background-size: 0.5em;
-  border-radius: 0.15em;
+  border-radius: 50%;
   z-index: -1;
 }
 .pickr .pcr-button::before {
@@ -446,9 +439,10 @@ PICKR 1.8.2 MIT | https://github.com/Simonwep/pickr
   left: 0;
   height: 100%;
   width: 100%;
+  border-radius: 50%;
   transition: background 0.3s;
   background: var(--pcr-color);
-  border-radius: 0.15em;
+  z-index: 1;
 }
 .pickr .pcr-button.clear {
   background-size: 70%;
@@ -625,30 +619,31 @@ PICKR 1.8.2 MIT | https://github.com/Simonwep/pickr
 .pcr-app .pcr-interaction .pcr-save,
 .pcr-app .pcr-interaction .pcr-cancel,
 .pcr-app .pcr-interaction .pcr-clear {
-  color: #fff;
   width: auto;
 }
-.pcr-app .pcr-interaction .pcr-save,
-.pcr-app .pcr-interaction .pcr-cancel,
-.pcr-app .pcr-interaction .pcr-clear {
-  color: #fff;
-}
-.pcr-app .pcr-interaction .pcr-save:hover,
-.pcr-app .pcr-interaction .pcr-cancel:hover,
-.pcr-app .pcr-interaction .pcr-clear:hover {
-  filter: brightness(0.925);
-}
+
 .pcr-app .pcr-interaction .pcr-save {
-  background: #4285f4;
+  color: var(--text-on-accent) !important;
+  background: var(--interactive-accent) !important;
 }
+.pcr-app .pcr-interaction .pcr-save:hover {
+  background: var(--interactive-accent-hover) !important;
+}
+
 .pcr-app .pcr-interaction .pcr-clear,
 .pcr-app .pcr-interaction .pcr-cancel {
-  background: #f44250;
+  color: var(--text-normal) !important;
+  background: var(--interactive-normal) !important;
 }
+.pcr-app .pcr-interaction .pcr-clear:hover,
+.pcr-app .pcr-interaction .pcr-cancel:hover {
+  background: var(--interactive-hover) !important;
+}
+
 .pcr-app .pcr-interaction .pcr-clear:focus,
-.pcr-app .pcr-interaction .pcr-cancel:focus {
-  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.85),
-    0 0 0 3px rgba(244, 66, 80, 0.75);
+.pcr-app .pcr-interaction .pcr-cancel:focus,
+.pcr-app .pcr-interaction .pcr-save:focus {
+  box-shadow: 0 0 0 2px var(--background-modifier-border-focus);
 }
 .pcr-app .pcr-selection .pcr-picker {
   position: absolute;
@@ -793,4 +788,103 @@ PICKR 1.8.2 MIT | https://github.com/Simonwep/pickr
   background: linear-gradient(to right, transparent, black),
     url('data:image/svg+xml;utf8, <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2 2"><path fill="white" d="M1,0H2V1H1V0ZM0,1H1V2H0V1Z"/><path fill="gray" d="M0,0H1V1H0V0ZM1,1H2V2H1V1Z"/></svg>');
   background-size: 100%, 0.25em;
+}
+
+.highlightr-floating-toolbar {
+  position: absolute;
+  display: flex;
+  background-color: var(--background-primary);
+  border: 1px solid var(--background-modifier-border);
+  border-radius: 8px;
+  padding: 4px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  gap: 4px;
+  z-index: 1000;
+  transition: opacity 0.15s ease, transform 0.15s ease;
+  transform: translateY(0);
+}
+
+.highlightr-floating-btn {
+  background: transparent;
+  box-shadow: none;
+  border: none;
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  cursor: pointer;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-muted);
+}
+
+.highlightr-floating-btn:hover {
+  background-color: var(--background-modifier-hover);
+  color: var(--text-normal);
+}
+
+.highlightr-floating-btn svg {
+  width: 20px;
+  height: 20px;
+}
+
+/*offset*/
+.highlightr-offset mark,
+.highlightr-offset .markdown-preview-view mark {
+  border-radius: 0;
+  padding: 0.125em 0.125em;
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
+  --offset-bg: var(--background-primary);
+  background-image: 
+    linear-gradient(360deg, rgba(255, 255, 255, 0) 40%, var(--offset-bg) 40%),
+    linear-gradient(to right, var(--offset-bg) 0.5em, transparent 0.5em) !important;
+}
+
+.highlightr-offset.hide-tokens .cm-s-obsidian span.cm-highlight,
+.hide-tokens.highlightr-offset .cm-s-obsidian span.cm-highlight {
+  border-radius: 0;
+}
+
+.highlightr-offset .cm-s-obsidian span.hltr-first-char {
+  padding: 0.125em 0.125em;
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
+  --offset-bg: var(--background-primary);
+  background-image: 
+    linear-gradient(360deg, rgba(255, 255, 255, 0) 40%, var(--offset-bg) 40%),
+    linear-gradient(to right, var(--offset-bg) 0.5em, transparent 0.5em) !important;
+}
+
+.highlightr-offset .cm-s-obsidian span.cm-highlight:not(.hltr-first-char) {
+  padding: 0.125em 0.125em;
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
+  --offset-bg: var(--background-primary);
+  background-image: linear-gradient(360deg, rgba(255, 255, 255, 0) 40%, var(--offset-bg) 40%) !important;
+}
+
+.highlightr-offset .cm-s-obsidian span.cm-formatting-highlight {
+  padding: 0.15em 0.3em;
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
+}
+
+.highlightr-offset
+  .cm-s-obsidian
+  .cm-highlight
+  + span.cm-formatting-highlight {
+  padding: 0.15em 0.3em;
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
+}
+
+.highlightr-offset .workspace-split.mod-left-split mark,
+.highlightr-offset .workspace-split.mod-left-split span.cm-highlight,
+.highlightr-offset .workspace-split.mod-left-split .markdown-preview-view mark,
+.highlightr-offset .workspace-split.mod-right-split mark,
+.highlightr-offset .workspace-split.mod-right-split span.cm-highlight,
+.highlightr-offset .workspace-split.mod-right-split .markdown-preview-view mark {
+  --offset-bg: var(--background-secondary);
 }

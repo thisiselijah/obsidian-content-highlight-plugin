@@ -19,7 +19,12 @@ export function createStyles(settings: HighlightrSettings) {
     let colorLowercase = highlighter.toLowerCase().replace(/ /g, '-');
     addNewStyle(
       `.hltr-${colorLowercase},\nmark.hltr-${colorLowercase},\n.markdown-preview-view mark.hltr-${colorLowercase}`,
-      `background: ${settings.highlighters[highlighter]};`,
+      `background-color: ${settings.highlighters[highlighter]} !important;\n padding: 0.125em 0.15em !important;\n margin: 0 -0.15em !important;`,
+      styleSheet
+    );
+    addNewStyle(
+      `.hltr-${colorLowercase} .cm-inline-code,\nmark.hltr-${colorLowercase} code,\n.markdown-preview-view mark.hltr-${colorLowercase} code`,
+      `background-color: transparent !important;`,
       styleSheet
     );
   });

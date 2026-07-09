@@ -10,12 +10,16 @@ import { createHighlighterIcons } from "src/icons/customIcons";
 
 import { createStyles } from "src/utils/createStyles";
 import { EnhancedApp, EnhancedEditor } from "src/settings/types";
+import { FloatingMenu } from "src/ui/floatingMenu";
+
+import { highlightrLivePreviewPlugin } from "src/extensions/livePreview";
 
 export default class HighlightrPlugin extends Plugin {
   app: EnhancedApp;
   editor: EnhancedEditor;
   manifest: PluginManifest;
   settings: HighlightrSettings;
+  floatingMenu: FloatingMenu;
 
   async onload() {
     console.log(`Highlightr v${this.manifest.version} loaded`);
@@ -23,16 +27,45 @@ export default class HighlightrPlugin extends Plugin {
 
     await this.loadSettings();
 
+    this.registerEditorExtension(highlightrLivePreviewPlugin(this.settings));
+
+    this.registerMarkdownPostProcessor((element, context) => {
+      const marks = element.querySelectorAll("mark");
+      marks.forEach((mark) => {
+        const nextNode = mark.nextSibling;
+        if (nextNode && nextNode.nodeType === Node.TEXT_NODE) {
+          const match = nextNode.textContent?.match(/^\{([a-zA-Z0-9_\-\s]+)\}/);
+          if (match) {
+            const colorKey = match[1];
+            const color = this.settings.highlighters[colorKey];
+            if (color) {
+              mark.addClass(`hltr-${colorKey.toLowerCase().replace(/ /g, '-')}`);
+              // Remove the {color} part from text
+              nextNode.textContent = nextNode.textContent!.substring(match[0].length);
+            }
+          }
+        }
+      });
+    });
+
     this.app.workspace.onLayoutReady(() => {
       this.reloadStyles(this.settings);
       createHighlighterIcons(this.settings, this);
+      
+      if (this.settings.enableFloatingMenu) {
+        if (!this.floatingMenu) {
+          this.floatingMenu = new FloatingMenu(this, this.app);
+        }
+      }
+
+      this.generateCommands(this.editor);
     });
+
+    this.addSettingTab(new HighlightrSettingTab(this.app, this));
 
     this.registerEvent(
       this.app.workspace.on("editor-menu", this.handleHighlighterInContextMenu)
     );
-
-    this.addSettingTab(new HighlightrSettingTab(this.app, this));
 
     this.addCommand({
       id: "highlighter-plugin-menu",
@@ -50,10 +83,23 @@ export default class HighlightrPlugin extends Plugin {
       createHighlighterIcons(this.settings, this);
       this.generateCommands(this.editor);
     });
-    this.generateCommands(this.editor);
+    addEventListener("Highlightr-ToggleFloatingMenu", () => {
+      if (this.settings.enableFloatingMenu) {
+        if (!this.floatingMenu) {
+          this.floatingMenu = new FloatingMenu(this, this.app);
+        }
+      } else {
+        if (this.floatingMenu) {
+          this.floatingMenu.destroy();
+          this.floatingMenu = null;
+        }
+      }
+    });
+
     this.refresh();
   }
 
+  
   reloadStyles(settings: HighlightrSettings) {
     let currentSheet = document.querySelector("style#highlightr-styles");
     if (currentSheet) {
@@ -67,17 +113,48 @@ export default class HighlightrPlugin extends Plugin {
   eraseHighlight = (editor: Editor) => {
     const selections = editor.listSelections();
     let changes = [];
+
     for (const selection of selections) {
-      const currentStr = editor.getRange(selection.anchor, selection.head);
-      const newStr = currentStr
-        .replace(/\<mark style.*?[^\>]\>/g, "")
-        .replace(/\<mark class.*?[^\>]\>/g, "")
-        .replace(/\<\/mark>/g, "");
-      changes.push({
-        from: selection.anchor,
-        to: selection.head,
-        text: newStr,
-      });
+      const from = selection.anchor.line < selection.head.line || (selection.anchor.line === selection.head.line && selection.anchor.ch <= selection.head.ch) ? selection.anchor : selection.head;
+      const to = selection.anchor.line < selection.head.line || (selection.anchor.line === selection.head.line && selection.anchor.ch <= selection.head.ch) ? selection.head : selection.anchor;
+      const lineStart = from.line;
+      const lineEnd = to.line;
+
+      for (let i = lineStart; i <= lineEnd; i++) {
+        let lineText = editor.getLine(i);
+        let newLineText = lineText;
+
+        let selStartCh = (i === from.line) ? from.ch : 0;
+        let selEndCh = (i === to.line) ? to.ch : lineText.length;
+
+        let currentSelStart = selStartCh;
+        let currentSelEnd = selEndCh;
+
+        const processRegex = (regex: RegExp) => {
+            let localDiff = 0;
+            newLineText = newLineText.replace(regex, (match, p1, offset) => {
+                if (offset <= currentSelEnd && offset + match.length >= currentSelStart) {
+                    localDiff -= (match.length - p1.length);
+                    return p1;
+                }
+                return match;
+            });
+            currentSelStart += localDiff;
+            currentSelEnd += localDiff;
+        };
+
+        processRegex(/\<mark.*?\>(.*?)\<\/mark\>/g);
+        processRegex(/==(.*?)==\{[a-zA-Z0-9_\-\s]+\}/g);
+        processRegex(/==(.*?)==/g);
+
+        if (newLineText !== lineText) {
+            changes.push({
+                from: { line: i, ch: 0 },
+                to: { line: i, ch: lineText.length },
+                text: newLineText
+            });
+        }
+      }
     }
     
     editor.transaction({
@@ -124,9 +201,12 @@ export default class HighlightrPlugin extends Plugin {
               to: sufEnd,
               text: selectedText
             });
+            const newToCh = from.line === to.line
+              ? to.ch - prefix.length
+              : to.ch;
             newSelections.push({
-              from: { line: from.line, ch: from.ch - prefix.length },
-              to: { line: to.line, ch: to.ch - prefix.length }
+              from: { line: to.line, ch: newToCh },
+              to: { line: to.line, ch: newToCh }
             });
           } else {
             changes.push({
@@ -134,10 +214,20 @@ export default class HighlightrPlugin extends Plugin {
               to: to,
               text: `${prefix}${selectedText}${suffix}`
             });
-            newSelections.push({
-              from: { line: from.line, ch: from.ch + prefix.length },
-              to: { line: to.line, ch: to.ch + prefix.length }
-            });
+            if (selectedText.length === 0) {
+              newSelections.push({
+                from: { line: from.line, ch: from.ch + prefix.length },
+                to: { line: to.line, ch: to.ch + prefix.length }
+              });
+            } else {
+              const newToCh = from.line === to.line 
+                ? to.ch + prefix.length + suffix.length 
+                : to.ch + suffix.length;
+              newSelections.push({
+                from: { line: to.line, ch: newToCh },
+                to: { line: to.line, ch: newToCh }
+              });
+            }
           }
         }
 
@@ -162,11 +252,8 @@ export default class HighlightrPlugin extends Plugin {
         highlight: {
           char: 34,
           line: 0,
-          prefix:
-            this.settings.highlighterMethods === "css-classes"
-              ? `<mark class="hltr-${highlighterKey.toLowerCase()}">`
-              : `<mark style="background: ${this.settings.highlighters[highlighterKey]};">`,
-          suffix: "</mark>",
+          prefix: "==",
+          suffix: `=={${highlighterKey}}`,
         },
       };
 
@@ -217,10 +304,17 @@ export default class HighlightrPlugin extends Plugin {
       "highlightr-realistic",
       this.settings.highlighterStyle === "realistic"
     );
+    document.body.classList.toggle(
+      "highlightr-offset",
+      this.settings.highlighterStyle === "offset"
+    );
   };
 
   onunload() {
     console.log("Highlightr unloaded");
+    if (this.floatingMenu) {
+      this.floatingMenu.destroy();
+    }
   }
 
   handleHighlighterInContextMenu = (

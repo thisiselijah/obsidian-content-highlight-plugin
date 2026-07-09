@@ -4,9 +4,8 @@ export const HIGHLIGHTER_STYLES = [
   "floating",
   "rounded",
   "realistic",
+  "offset",
 ];
-
-export const HIGHLIGHTER_METHODS = ["css-classes", "inline-styles"];
 
 export interface Highlighters {
   [color: string]: string;
@@ -14,14 +13,14 @@ export interface Highlighters {
 
 export interface HighlightrSettings {
   highlighterStyle: string;
-  highlighterMethods: string;
+  enableFloatingMenu: boolean;
   highlighters: Highlighters;
   highlighterOrder: string[];
 }
 
 const DEFAULT_SETTINGS: HighlightrSettings = {
   highlighterStyle: "none",
-  highlighterMethods: "inline-styles",
+  enableFloatingMenu: true,
   highlighters: {
     Pink: "#FFB8EBA6",
     Red: "#FF5582A6",

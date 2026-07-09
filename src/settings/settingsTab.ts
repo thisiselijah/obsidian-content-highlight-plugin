@@ -5,10 +5,11 @@ import {
   PluginSettingTab,
   Notice,
   TextComponent,
+  ButtonComponent,
 } from "obsidian";
 import Pickr from "@simonwep/pickr";
 import Sortable from "sortablejs";
-import { HIGHLIGHTER_METHODS, HIGHLIGHTER_STYLES } from "./settingsData";
+import { HIGHLIGHTER_STYLES } from "./settingsData";
 import { setAttributes } from "src/utils/setAttributes";
 
 export class HighlightrSettingTab extends PluginSettingTab {
@@ -23,33 +24,26 @@ export class HighlightrSettingTab extends PluginSettingTab {
   display(): void {
     const { containerEl } = this;
     containerEl.empty();
-    containerEl.createEl("h1", { text: "Highlightr" });
-    containerEl.createEl("p", { text: "Maintained by " }).createEl("a", {
-      text: "Elijah",
-      href: "https://github.com/thisiselijah",
-    });
-    containerEl.createEl("p", { text: " (Original by chetachi)" });
+    // containerEl.createEl("h1", { text: "Highlightr" });
+    // containerEl.createEl("p", { text: "Maintained by " }).createEl("a", {
+    //   text: "thisiselijah",
+    //   href: "https://github.com/thisiselijah",
+    // });
+    // containerEl.createEl("p", { text: " (Original by chetachi)" });
     containerEl.createEl("h2", { text: "Plugin Settings" });
 
+
+
     new Setting(containerEl)
-      .setName("Choose highlight method")
-      .setDesc(
-        `Choose between highlighting with inline CSS or CSS classes. Please note that there are pros and cons to both choices. Inline CSS will keep you from being reliant on external CSS files if you choose to export your notes. CSS classes are more flexible and easier to customize.`
-      )
-      .addDropdown((dropdown) => {
-        let methods: Record<string, string> = {};
-        HIGHLIGHTER_METHODS.map((method) => (methods[method] = method));
-        dropdown.addOptions(methods);
-        dropdown
-          .setValue(this.plugin.settings.highlighterMethods)
-          .onChange((highlightrMethod) => {
-            this.plugin.settings.highlighterMethods = highlightrMethod;
-            setTimeout(() => {
-              dispatchEvent(new Event("Highlightr-NewCommand"));
-            }, 100);
-            this.plugin.saveSettings();
-            this.plugin.saveData(this.plugin.settings);
-            this.display();
+      .setName("Enable floating popup menu")
+      .setDesc("When selecting text, automatically show a floating menu with your highlighter colors.")
+      .addToggle((toggle) => {
+        toggle
+          .setValue(this.plugin.settings.enableFloatingMenu)
+          .onChange(async (val) => {
+            this.plugin.settings.enableFloatingMenu = val;
+            await this.plugin.saveSettings();
+            dispatchEvent(new Event("Highlightr-ToggleFloatingMenu"));
           });
       });
 
@@ -66,10 +60,9 @@ export class HighlightrSettingTab extends PluginSettingTab {
         dropdown.addOptions(styles);
         dropdown
           .setValue(this.plugin.settings.highlighterStyle)
-          .onChange((highlighterStyle) => {
+          .onChange(async (highlighterStyle) => {
             this.plugin.settings.highlighterStyle = highlighterStyle;
-            this.plugin.saveSettings();
-            this.plugin.saveData(this.plugin.settings);
+            await this.plugin.saveSettings();
             this.plugin.refresh();
           });
       });
@@ -79,9 +72,10 @@ export class HighlightrSettingTab extends PluginSettingTab {
       d.setAttribute("style", "font-size: .925em; margin-top: 12px; display: flex; gap: 16px; flex-wrap: wrap; align-items: center;");
       d.innerHTML = `
       <span style="background:#FFB7EACC;padding: .125em .125em;--lowlight-background: var(--background-primary);border-radius: 0;background-image: linear-gradient(360deg,rgba(255, 255, 255, 0) 40%,var(--lowlight-background) 40%) !important;">Lowlight</span>
-      <span style="background:#93C0FFCC;--floating-background: var(--background-primary);border-radius: 0;padding-bottom: 5px;background-image: linear-gradient(360deg,rgba(255, 255, 255, 0) 28%,var(--floating-background) 28%) !important;">Floating</span>
-      <span style="background:#9CF09CCC;padding: 0.1em 0.4em;border-radius: 0.8em 0.3em;-webkit-box-decoration-break: clone;box-decoration-break: clone;text-shadow: 0 0 0.75em var(--background-primary-alt);">Realistic</span>
-      <span style="background:#CCA9FFCC;padding: 0.125em 0.15em;border-radius: 0.2em;-webkit-box-decoration-break: clone;box-decoration-break: clone;">Rounded</span>`;
+      <span style="background:#FFB7EACC;--floating-background: var(--background-primary);border-radius: 0;padding-bottom: 5px;background-image: linear-gradient(360deg,rgba(255, 255, 255, 0) 28%,var(--floating-background) 28%) !important;">Floating</span>
+      <span style="background:#FFB7EACC;padding: 0.1em 0.4em;border-radius: 0.8em 0.3em;-webkit-box-decoration-break: clone;box-decoration-break: clone;text-shadow: 0 0 0.75em var(--background-primary-alt);">Realistic</span>
+      <span style="background:#FFB7EACC;padding: 0.125em 0.15em;border-radius: 0.2em;-webkit-box-decoration-break: clone;box-decoration-break: clone;">Rounded</span>
+      <span style="background:#FFB7EACC;padding: 0.125em 0.125em;border-radius: 0;-webkit-box-decoration-break: clone;box-decoration-break: clone;--offset-bg: var(--background-primary);background-image: linear-gradient(360deg, rgba(255, 255, 255, 0) 40%, var(--offset-bg) 40%), linear-gradient(to right, var(--offset-bg) 0.5em, transparent 0.5em) !important;">Offset</span>`;
       return d;
     };
 
@@ -95,19 +89,26 @@ export class HighlightrSettingTab extends PluginSettingTab {
       .setDesc(
         `Create a highlight color by entering a name and a hex code. Use the picker to choose visually. Drag items to reorder.`
       );
+    const inputSpan = highlighterSetting.controlEl.createEl("span", {
+      cls: "highlighter-settings-inputs",
+      attr: { style: "display: flex; gap: 6px; flex-wrap: wrap; justify-content: space-between; width: 100%;" }
+    });
 
-    const colorInput = new TextComponent(highlighterSetting.controlEl);
+    const leftGroup = inputSpan.createEl("span", { attr: { style: "display: flex; gap: 8px; align-items: center;" } });
+    const rightGroup = inputSpan.createEl("span", { attr: { style: "display: flex; gap: 20px; align-items: center;" } });
+
+    const colorInput = new TextComponent(leftGroup);
     colorInput.setPlaceholder("Color name");
     colorInput.inputEl.addClass("highlighter-settings-color");
 
-    const valueInput = new TextComponent(highlighterSetting.controlEl);
+    const valueInput = new TextComponent(leftGroup);
     valueInput.setPlaceholder("Hex Code");
     valueInput.inputEl.addClass("highlighter-settings-value");
 
+    const pickerButton = new ButtonComponent(rightGroup);
+    pickerButton.setClass("highlightr-color-picker");
+
     highlighterSetting
-      .addButton((button) => {
-        button.setClass("highlightr-color-picker");
-      })
       .then(() => {
         let input = valueInput.inputEl;
         let currentColor = valueInput.inputEl.value || null;
@@ -156,8 +157,8 @@ export class HighlightrSettingTab extends PluginSettingTab {
 
         // Move pcr-app inside modal on show so Obsidian's focus trap doesn't steal focus
         const modalContainer = containerEl.closest(".modal-content") as HTMLElement;
-        pickrCreate.on("show", () => {
-          const pcrApp = document.querySelector(".pcr-app") as HTMLElement;
+        pickrCreate.on("show", (color: any, instance: any) => {
+          const pcrApp = instance.getRoot().app;
           if (pcrApp && modalContainer && !modalContainer.contains(pcrApp)) {
             modalContainer.appendChild(pcrApp);
           }
@@ -201,15 +202,16 @@ export class HighlightrSettingTab extends PluginSettingTab {
             instance.hide();
             instance.addSwatch(color.toHEXA().toString());
           });
-      })
-      .addButton((button) => {
-        button
-          .setClass("HighlightrSettingsButton")
-          .setClass("HighlightrSettingsButtonAdd")
-          .setIcon("highlightr-save")
-          .setTooltip("Save")
-          .onClick(async (buttonEl: any) => {
-            let color = colorInput.inputEl.value.replace(" ", "-");
+      });
+
+    const addButton = new ButtonComponent(rightGroup);
+    addButton
+      .setClass("HighlightrSettingsButton")
+      .setCta()
+      .setIcon("highlightr-save")
+      .setTooltip("Save")
+      .onClick(async (buttonEl: any) => {
+        let color = colorInput.inputEl.value.replace(" ", "-");
             let value = valueInput.inputEl.value.trim().toUpperCase();
 
             if (value && /^[0-9A-Fa-f]{3,8}$/.test(value)) {
@@ -237,7 +239,6 @@ export class HighlightrSettingTab extends PluginSettingTab {
                 : new Notice("Highlighter values missing");
             }
           });
-      });
 
     const highlightersContainer = containerEl.createEl("div", {
       cls: "HighlightrSettingsTabsContainer",
@@ -275,14 +276,19 @@ export class HighlightrSettingTab extends PluginSettingTab {
       setting.infoEl.style.display = "flex";
       setting.infoEl.style.alignItems = "center";
       setting.infoEl.style.flex = "1";
-      setting.infoEl.style.minWidth = "0";
-      setting.infoEl.style.overflow = "hidden";
 
       const renderNormalMode = () => {
         setting.infoEl.empty();
         setting.infoEl.appendChild(colorIcon);
+
+        const infoGroup = setting.infoEl.createEl("div", { cls: "highlighter-info-group" });
+        infoGroup.style.display = "flex";
+        infoGroup.style.alignItems = "baseline";
+        infoGroup.style.gap = "8px";
+        infoGroup.style.flex = "1";
+        infoGroup.style.minWidth = "0";
         
-        const nameSpan = setting.infoEl.createEl("span", { text: highlighter });
+        const nameSpan = infoGroup.createEl("span", { text: highlighter });
         nameSpan.style.flexGrow = "1";
         nameSpan.style.flexShrink = "1";
         nameSpan.style.flexBasis = "200px";
@@ -290,17 +296,15 @@ export class HighlightrSettingTab extends PluginSettingTab {
         nameSpan.style.overflow = "hidden";
         nameSpan.style.textOverflow = "ellipsis";
         nameSpan.style.whiteSpace = "nowrap";
-      };
 
-      // Create hex code span in the control area (right side)
-      const valSpan = createEl("span", { text: this.plugin.settings.highlighters[highlighter] });
-      valSpan.style.flexShrink = "0";
-      valSpan.style.whiteSpace = "nowrap";
-      valSpan.style.fontFamily = "var(--font-monospace)";
-      valSpan.style.textTransform = "uppercase";
-      valSpan.style.color = "var(--text-muted)";
-      valSpan.style.fontSize = "0.85em";
-      setting.controlEl.prepend(valSpan);
+        const valSpan = infoGroup.createEl("span", { text: this.plugin.settings.highlighters[highlighter] });
+        valSpan.style.flexShrink = "0";
+        valSpan.style.whiteSpace = "nowrap";
+        valSpan.style.fontFamily = "var(--font-monospace)";
+        valSpan.style.textTransform = "uppercase";
+        valSpan.style.color = "var(--text-muted)";
+        valSpan.style.fontSize = "0.85em";
+      };
 
       renderNormalMode();
 
@@ -311,22 +315,26 @@ export class HighlightrSettingTab extends PluginSettingTab {
       setting.addButton((button) => {
         button
           .setClass("HighlightrSettingsButton")
+          .setCta()
           .setIcon("pencil")
           .setTooltip("Edit")
           .onClick(async () => {
             if (!isEditing) {
               isEditing = true;
               setting.infoEl.empty();
+              setting.infoEl.style.display = "flex";
+              setting.infoEl.style.alignItems = "center";
+              setting.infoEl.style.gap = "8px";
               setting.infoEl.appendChild(colorIcon);
 
               nameInputEl = setting.infoEl.createEl("input", { type: "text", value: highlighter });
-              nameInputEl.style.flex = "2";
-              nameInputEl.style.minWidth = "0";
-              nameInputEl.style.marginRight = "10px";
+              nameInputEl.style.flex = "0 0 100px";
+              nameInputEl.style.width = "100px";
+              nameInputEl.style.minWidth = "100px";
 
               valInputEl = setting.infoEl.createEl("input", { type: "text", value: this.plugin.settings.highlighters[highlighter] });
               valInputEl.style.flex = "1";
-              valInputEl.style.minWidth = "0";
+              valInputEl.style.minWidth = "80px";
               valInputEl.style.fontFamily = "var(--font-monospace)";
               valInputEl.style.textTransform = "uppercase";
 
@@ -352,7 +360,7 @@ export class HighlightrSettingTab extends PluginSettingTab {
                   }
                   this.plugin.settings.highlighters[newName] = newVal;
                   delete this.plugin.settings.highlighters[highlighter];
-                  (this.app as any).commands.removeCommand(`highlightr-plugin:${highlighter}`);
+                  (this.app as any).commands.removeCommand(`content-highlight:${highlighter}`);
                 } else {
                   this.plugin.settings.highlighters[highlighter] = newVal;
                 }
@@ -372,13 +380,13 @@ export class HighlightrSettingTab extends PluginSettingTab {
       setting.addButton((button) => {
         button
           .setClass("HighlightrSettingsButton")
-          .setClass("HighlightrSettingsButtonDelete")
+          .setWarning()
           .setIcon("highlightr-delete")
           .setTooltip("Remove")
           .onClick(async () => {
             new Notice(`${highlighter} highlight deleted`);
             (this.app as any).commands.removeCommand(
-              `highlightr-plugin:${highlighter}`
+              `content-highlight:${highlighter}`
             );
             delete this.plugin.settings.highlighters[highlighter];
             this.plugin.settings.highlighterOrder.remove(highlighter);

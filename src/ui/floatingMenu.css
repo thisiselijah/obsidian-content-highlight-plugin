@@ -1,0 +1,36 @@
+.highlightr-floating-toolbar {
+  position: absolute;
+  display: flex;
+  background-color: var(--background-primary);
+  border: 1px solid var(--background-modifier-border);
+  border-radius: 8px;
+  padding: 4px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  gap: 4px;
+  z-index: 1000;
+  transition: opacity 0.15s ease, transform 0.15s ease;
+  transform: translateY(0);
+}
+
+.highlightr-floating-btn {
+  background: transparent;
+  box-shadow: none;
+  border: none;
+  padding: 4px 6px;
+  cursor: pointer;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-muted);
+}
+
+.highlightr-floating-btn:hover {
+  background-color: var(--background-modifier-hover);
+  color: var(--text-normal);
+}
+
+.highlightr-floating-btn svg {
+  width: 16px;
+  height: 16px;
+}
