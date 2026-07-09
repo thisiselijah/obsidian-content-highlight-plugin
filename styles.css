@@ -360,17 +360,7 @@ button:not(.mod-cta):not(.mod-warning).HighlightrSettingsButton.HighlightrSettin
   box-shadow: 0px 3px 32px rgb(31 38 135 / 15%);
 }
 
-/*----------------------------------------------------------------
-HIGHLIGHTR SUPPORT
-----------------------------------------------------------------*/
 
-.hltrDonationSection {
-  width: 65%;
-  height: 50vh;
-  margin: 0 auto;
-  text-align: center;
-  color: var(--text-normal);
-}
 
 .pcr-app .pcr-swatches > button {
   padding: 0;
