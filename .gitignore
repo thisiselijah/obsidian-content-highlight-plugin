@@ -17,3 +17,8 @@ data.json
 
 .DS_Store
 .DS_Store
+
+# dev
+.env
+.hotreload
+test-regex.js
