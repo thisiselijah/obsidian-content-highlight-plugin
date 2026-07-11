@@ -33,6 +33,11 @@ jobs:
         run: |
           tag_name="${GITHUB_REF#refs/tags/}"
           
+          # 檢查 Release 是否已存在，若存在則先刪除，以便重新建立與覆蓋檔案
+          if gh release view "$tag_name" >/dev/null 2>&1; then
+            gh release delete "$tag_name" --yes
+          fi
+          
           # 使用 GitHub CLI 建立 Release，並上傳外掛必備的三個檔案
           gh release create "$tag_name" \
             --title "Release $tag_name" \
