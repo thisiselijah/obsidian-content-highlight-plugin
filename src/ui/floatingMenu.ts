@@ -16,11 +16,6 @@ export class FloatingMenu {
   createToolbar() {
     this.toolbar = document.createElement("div");
     this.toolbar.addClass("highlightr-floating-toolbar");
-    this.toolbar.setCssStyles({
-      "display": "none",
-      "position": "absolute",
-      "z-index": "1000"
-    });
     document.body.appendChild(this.toolbar);
 
     this.renderButtons();
@@ -56,11 +51,7 @@ export class FloatingMenu {
 
     // Add divider
     const divider = document.createElement("div");
-    divider.setCssStyles({
-      "width": "1px",
-      "background-color": "var(--background-modifier-border)",
-      "margin": "2px 2px"
-    });
+    divider.addClass("highlightr-floating-divider");
     this.toolbar.appendChild(divider);
 
     // Add clear highlight button
@@ -127,10 +118,10 @@ export class FloatingMenu {
         const top = rect.top - toolbarHeight - 10;
         const left = rect.left + (rect.width / 2) - (this.toolbar.offsetWidth / 2);
 
+        this.toolbar.addClass("is-visible");
         this.toolbar.setCssStyles({
           "top": `${Math.max(10, top)}px`,
-          "left": `${Math.max(10, left)}px`,
-          "display": "flex"
+          "left": `${Math.max(10, left)}px`
         });
       }, 50);
     } else {
@@ -139,7 +130,7 @@ export class FloatingMenu {
   }
 
   hide() {
-    this.toolbar.setCssStyles({ "display": "none" });
+    this.toolbar.removeClass("is-visible");
   }
   
   destroy() {

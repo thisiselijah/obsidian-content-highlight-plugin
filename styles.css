@@ -940,3 +940,88 @@ PICKR 1.8.2 MIT | https://github.com/Simonwep/pickr
 .highlightr-offset .workspace-split.mod-right-split .markdown-preview-view mark {
   --offset-bg: var(--background-secondary);
 }
+
+/* UI Styles for Settings and Floating Menu */
+.highlighter-style-demo {
+  font-size: .925em;
+  margin-top: 12px;
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+.highlighter-settings-inputs {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  width: 100%;
+}
+.highlighter-settings-left {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+.highlighter-settings-right {
+  display: flex;
+  gap: 20px;
+  align-items: center;
+}
+.highlighter-info-el {
+  display: flex;
+  align-items: center;
+  flex: 1;
+}
+.highlighter-info-el.is-editing {
+  gap: 8px;
+}
+.highlighter-info-group {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  flex: 1;
+  min-width: 0;
+}
+.highlighter-name-span {
+  flex-grow: 1;
+  flex-shrink: 1;
+  flex-basis: 200px;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.highlighter-val-span {
+  flex-shrink: 0;
+  white-space: nowrap;
+  font-family: var(--font-monospace);
+  text-transform: uppercase;
+  color: var(--text-muted);
+  font-size: 0.85em;
+}
+.highlighter-name-input {
+  flex: 0 0 100px;
+  width: 100px;
+  min-width: 100px;
+}
+.highlighter-val-input {
+  flex: 1;
+  min-width: 80px;
+  font-family: var(--font-monospace);
+  text-transform: uppercase;
+}
+
+/* Floating Menu Styles */
+.highlightr-floating-toolbar {
+  display: none;
+  position: absolute;
+  z-index: 1000;
+}
+.highlightr-floating-toolbar.is-visible {
+  display: flex;
+}
+.highlightr-floating-divider {
+  width: 1px;
+  background-color: var(--background-modifier-border);
+  margin: 2px 2px;
+}

@@ -68,8 +68,7 @@ export class HighlightrSettingTab extends PluginSettingTab {
       });
 
     const styleDemo = () => {
-      const d = createEl("p");
-      d.setCssStyles({ "font-size": ".925em", "margin-top": "12px", "display": "flex", "gap": "16px", "flex-wrap": "wrap", "align-items": "center" });
+      const d = createEl("p", { cls: "highlighter-style-demo" });
       d.innerHTML = `
       <span style="background:#FFB7EACC;padding: .125em .125em;--lowlight-background: var(--background-primary);border-radius: 0;background-image: linear-gradient(360deg,rgba(255, 255, 255, 0) 40%,var(--lowlight-background) 40%) !important;">Lowlight</span>
       <span style="background:#FFB7EACC;--floating-background: var(--background-primary);border-radius: 0;padding-bottom: 5px;background-image: linear-gradient(360deg,rgba(255, 255, 255, 0) 28%,var(--floating-background) 28%) !important;">Floating</span>
@@ -108,13 +107,10 @@ export class HighlightrSettingTab extends PluginSettingTab {
     const inputSpan = highlighterSetting.controlEl.createEl("span", {
       cls: "highlighter-settings-inputs"
     });
-    inputSpan.setCssStyles({ "display": "flex", "gap": "6px", "flex-wrap": "wrap", "justify-content": "space-between", "width": "100%" });
 
-    const leftGroup = inputSpan.createEl("span");
-    leftGroup.setCssStyles({ "display": "flex", "gap": "8px", "align-items": "center" });
+    const leftGroup = inputSpan.createEl("span", { cls: "highlighter-settings-left" });
     
-    const rightGroup = inputSpan.createEl("span");
-    rightGroup.setCssStyles({ "display": "flex", "gap": "20px", "align-items": "center" });
+    const rightGroup = inputSpan.createEl("span", { cls: "highlighter-settings-right" });
 
     const colorInput = new TextComponent(leftGroup);
     colorInput.setPlaceholder("Color name");
@@ -300,45 +296,17 @@ export class HighlightrSettingTab extends PluginSettingTab {
       svg.appendChild(circle);
       colorIcon.appendChild(svg);
       
-      setting.infoEl.setCssStyles({
-        "display": "flex",
-        "align-items": "center",
-        "flex": "1"
-      });
+      setting.infoEl.addClass("highlighter-info-el");
 
       const renderNormalMode = () => {
         setting.infoEl.empty();
         setting.infoEl.appendChild(colorIcon);
 
         const infoGroup = setting.infoEl.createEl("div", { cls: "highlighter-info-group" });
-        infoGroup.setCssStyles({
-          "display": "flex",
-          "align-items": "baseline",
-          "gap": "8px",
-          "flex": "1",
-          "min-width": "0"
-        });
         
-        const nameSpan = infoGroup.createEl("span", { text: highlighter });
-        nameSpan.setCssStyles({
-          "flex-grow": "1",
-          "flex-shrink": "1",
-          "flex-basis": "200px",
-          "min-width": "0",
-          "overflow": "hidden",
-          "text-overflow": "ellipsis",
-          "white-space": "nowrap"
-        });
+        const nameSpan = infoGroup.createEl("span", { text: highlighter, cls: "highlighter-name-span" });
 
-        const valSpan = infoGroup.createEl("span", { text: this.plugin.settings.highlighters[highlighter] });
-        valSpan.setCssStyles({
-          "flex-shrink": "0",
-          "white-space": "nowrap",
-          "font-family": "var(--font-monospace)",
-          "text-transform": "uppercase",
-          "color": "var(--text-muted)",
-          "font-size": "0.85em"
-        });
+        const valSpan = infoGroup.createEl("span", { text: this.plugin.settings.highlighters[highlighter], cls: "highlighter-val-span" });
       };
 
       renderNormalMode();
@@ -357,27 +325,13 @@ export class HighlightrSettingTab extends PluginSettingTab {
             if (!isEditing) {
               isEditing = true;
               setting.infoEl.empty();
-              setting.infoEl.setCssStyles({
-                "display": "flex",
-                "align-items": "center",
-                "gap": "8px"
-              });
+              setting.infoEl.removeClass("is-editing");
+              setting.infoEl.addClass("is-editing");
               setting.infoEl.appendChild(colorIcon);
 
-              nameInputEl = setting.infoEl.createEl("input", { type: "text", value: highlighter });
-              nameInputEl.setCssStyles({
-                "flex": "0 0 100px",
-                "width": "100px",
-                "min-width": "100px"
-              });
+              nameInputEl = setting.infoEl.createEl("input", { type: "text", value: highlighter, cls: "highlighter-name-input" });
 
-              valInputEl = setting.infoEl.createEl("input", { type: "text", value: this.plugin.settings.highlighters[highlighter] });
-              valInputEl.setCssStyles({
-                "flex": "1",
-                "min-width": "80px",
-                "font-family": "var(--font-monospace)",
-                "text-transform": "uppercase"
-              });
+              valInputEl = setting.infoEl.createEl("input", { type: "text", value: this.plugin.settings.highlighters[highlighter], cls: "highlighter-val-input" });
 
               button.setIcon("highlightr-save");
               button.setTooltip("Save");
