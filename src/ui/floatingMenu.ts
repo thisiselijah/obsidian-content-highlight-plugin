@@ -1,12 +1,13 @@
-import { App, MarkdownView, setIcon } from "obsidian";
+import { MarkdownView, setIcon } from "obsidian";
 import HighlightrPlugin from "../plugin/main";
+import { EnhancedApp } from "../settings/types";
 
 export class FloatingMenu {
   plugin: HighlightrPlugin;
-  app: App;
+  app: EnhancedApp;
   toolbar: HTMLElement;
 
-  constructor(plugin: HighlightrPlugin, app: App) {
+  constructor(plugin: HighlightrPlugin, app: EnhancedApp) {
     this.plugin = plugin;
     this.app = app;
     this.createToolbar();
@@ -35,8 +36,7 @@ export class FloatingMenu {
         e.stopPropagation();
         const view = this.app.workspace.getActiveViewOfType(MarkdownView);
         if (view) {
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
-          (this.app as any).commands.executeCommandById(`content-highlight:${highlighter}`);
+          this.app.commands.executeCommandById(`content-highlight:${highlighter}`);
           window.setTimeout(() => {
             view.editor.blur();
           }, 20);
@@ -65,8 +65,7 @@ export class FloatingMenu {
       e.stopPropagation();
       const view = this.app.workspace.getActiveViewOfType(MarkdownView);
       if (view) {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
-        (this.app as any).commands.executeCommandById(`content-highlight:unhighlight`);
+        this.app.commands.executeCommandById(`content-highlight:unhighlight`);
         window.setTimeout(() => {
           view.editor.blur();
         }, 20);

@@ -154,7 +154,7 @@ export default class HighlightrPlugin extends Plugin {
   settings: HighlightrSettings;
   floatingMenu: FloatingMenu;
 
-  // eslint-disable-next-line @typescript-eslint/no-misused-promises
+  // eslint-disable-next-line @typescript-eslint/no-misused-promises -- Obsidian Plugin.onload expects void
   async onload() {
     console.log(`Highlightr v${this.manifest.version} loaded`);
     addIcons();
@@ -266,7 +266,7 @@ export default class HighlightrPlugin extends Plugin {
 
         const processRegex = (regex: RegExp) => {
             let localDiff = 0;
-            newLineText = newLineText.replace(regex, (match, p1, offset) => {
+            newLineText = newLineText.replace(regex, (match: string, p1: string, offset: number) => {
                 if (offset <= currentSelEnd && offset + match.length >= currentSelStart) {
                     localDiff -= (match.length - p1.length);
                     return p1;
@@ -450,7 +450,7 @@ export default class HighlightrPlugin extends Plugin {
   };
 
   async loadSettings() {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment -- loadData returns any
     this.settings = Object.assign({}, DEFAULT_SETTINGS, await this.loadData());
   }
 

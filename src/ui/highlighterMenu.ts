@@ -28,18 +28,15 @@ const highlighterMenu = (
         highlighterItem.setTitle(highlighter);
         highlighterItem.setIcon(`highlightr-pen-${highlighter}`.toLowerCase().replace(/ /g, '-'));
         highlighterItem.onClick(() => {
-          // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
           app.commands.executeCommandById(`content-highlight:${highlighter}`);
         });
       });
     });
 
     if (editor.cursorCoords) {
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
       coords = editor.cursorCoords(true, "window");
     } else if (editor.coordsAtPos) {
       const offset = editor.posToOffset(cursor);
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
       coords = editor.cm.coordsAtPos?.(offset) ?? editor.coordsAtPos(offset);
     } else {
       return;

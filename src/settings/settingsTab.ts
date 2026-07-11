@@ -69,11 +69,11 @@ export class HighlightrSettingTab extends PluginSettingTab {
 
     const styleDemo = () => {
       const d = createEl("p", { cls: "highlighter-style-demo" });
-      d.createEl("span", { text: "Lowlight" }).setAttribute("style", "background:#FFB7EACC;padding: .125em .125em;--lowlight-background: var(--background-primary);border-radius: 0;background-image: linear-gradient(360deg,rgba(255, 255, 255, 0) 40%,var(--lowlight-background) 40%) !important;");
-      d.createEl("span", { text: "Floating" }).setAttribute("style", "background:#FFB7EACC;--floating-background: var(--background-primary);border-radius: 0;padding-bottom: 5px;background-image: linear-gradient(360deg,rgba(255, 255, 255, 0) 28%,var(--floating-background) 28%) !important;");
-      d.createEl("span", { text: "Realistic" }).setAttribute("style", "background:#FFB7EACC;padding: 0.1em 0.4em;border-radius: 0.8em 0.3em;-webkit-box-decoration-break: clone;box-decoration-break: clone;text-shadow: 0 0 0.75em var(--background-primary-alt);");
-      d.createEl("span", { text: "Rounded" }).setAttribute("style", "background:#FFB7EACC;padding: 0.125em 0.15em;border-radius: 0.2em;-webkit-box-decoration-break: clone;box-decoration-break: clone;");
-      d.createEl("span", { text: "Offset" }).setAttribute("style", "background:#FFB7EACC;padding: 0.125em 0.125em;border-radius: 0;-webkit-box-decoration-break: clone;box-decoration-break: clone;--offset-bg: var(--background-primary);background-image: linear-gradient(360deg, rgba(255, 255, 255, 0) 40%, var(--offset-bg) 40%), linear-gradient(to right, var(--offset-bg) 0.5em, transparent 0.5em) !important;");
+      d.createEl("span", { text: "Lowlight" }).setCssStyles({ "background": "#FFB7EACC", "padding": ".125em .125em", "--lowlight-background": "var(--background-primary)", "border-radius": "0", "background-image": "linear-gradient(360deg,rgba(255, 255, 255, 0) 40%,var(--lowlight-background) 40%) !important" });
+      d.createEl("span", { text: "Floating" }).setCssStyles({ "background": "#FFB7EACC", "--floating-background": "var(--background-primary)", "border-radius": "0", "padding-bottom": "5px", "background-image": "linear-gradient(360deg,rgba(255, 255, 255, 0) 28%,var(--floating-background) 28%) !important" });
+      d.createEl("span", { text: "Realistic" }).setCssStyles({ "background": "#FFB7EACC", "padding": "0.1em 0.4em", "border-radius": "0.8em 0.3em", "-webkit-box-decoration-break": "clone", "box-decoration-break": "clone", "text-shadow": "0 0 0.75em var(--background-primary-alt)" });
+      d.createEl("span", { text: "Rounded" }).setCssStyles({ "background": "#FFB7EACC", "padding": "0.125em 0.15em", "border-radius": "0.2em", "-webkit-box-decoration-break": "clone", "box-decoration-break": "clone" });
+      d.createEl("span", { text: "Offset" }).setCssStyles({ "background": "#FFB7EACC", "padding": "0.125em 0.125em", "border-radius": "0", "-webkit-box-decoration-break": "clone", "box-decoration-break": "clone", "--offset-bg": "var(--background-primary)", "background-image": "linear-gradient(360deg, rgba(255, 255, 255, 0) 40%, var(--offset-bg) 40%), linear-gradient(to right, var(--offset-bg) 0.5em, transparent 0.5em) !important" });
       return d;
     };
 
@@ -163,7 +163,7 @@ export class HighlightrSettingTab extends PluginSettingTab {
           let typed = valueInput.inputEl.value.trim().toUpperCase();
           if (!/^#/.test(typed) && typed.length > 0) typed = "#" + typed;
           if (/^#[0-9A-Fa-f]{6}([0-9A-Fa-f]{2})?$/.test(typed)) {
-            try { pickrCreate.setColor(typed); } catch (e) { /* ignore */ }
+            try { pickrCreate.setColor(typed); } catch { /* ignore */ }
           }
           window.setTimeout(() => { isManualInput = false; }, 50);
         });
@@ -171,8 +171,8 @@ export class HighlightrSettingTab extends PluginSettingTab {
         // Move pcr-app inside modal on show so Obsidian's focus trap doesn't steal focus
         const modalContainer = containerEl.closest(".modal-content") as HTMLElement;
         pickrCreate.on("show", (color: Pickr.HSVaColor | null, instance: Pickr) => {
-          // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-explicit-any
-          const pcrApp = (instance.getRoot() as any).app;
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-assignment -- Required to access Pickr's internal app DOM element
+          const pcrApp = (instance.getRoot() as unknown as { app: HTMLElement }).app;
           if (pcrApp && modalContainer && !modalContainer.contains(pcrApp)) {
             modalContainer.appendChild(pcrApp);
           }
@@ -241,6 +241,7 @@ export class HighlightrSettingTab extends PluginSettingTab {
                 await this.plugin.saveSettings();
                 this.display();
               } else {
+                // eslint-disable-next-line @typescript-eslint/no-unsafe-call -- MouseEvent
                 buttonEl.stopImmediatePropagation();
                 new Notice("This color already exists");
               }
@@ -288,9 +289,9 @@ export class HighlightrSettingTab extends PluginSettingTab {
       const colorIcon = createEl("span");
       colorIcon.addClass("highlighter-setting-icon");
       
-      const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+      const svg = activeDocument.createElementNS("http://www.w3.org/2000/svg", "svg");
       svg.setAttribute("viewBox", "0 0 24 24");
-      const circle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+      const circle = activeDocument.createElementNS("http://www.w3.org/2000/svg", "circle");
       circle.setAttribute("cx", "12");
       circle.setAttribute("cy", "12");
       circle.setAttribute("r", "8");
@@ -355,8 +356,7 @@ export class HighlightrSettingTab extends PluginSettingTab {
                   }
                   this.plugin.settings.highlighters[newName] = newVal;
                   delete this.plugin.settings.highlighters[highlighter];
-                  // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
-                  (this.app as any).commands.removeCommand(`content-highlight:${highlighter}`);
+                  this.plugin.app.commands.removeCommand(`content-highlight:${highlighter}`);
                 } else {
                   this.plugin.settings.highlighters[highlighter] = newVal;
                 }
@@ -381,8 +381,7 @@ export class HighlightrSettingTab extends PluginSettingTab {
           .setTooltip("Remove")
           .onClick(async () => {
             new Notice(`${highlighter} highlight deleted`);
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
-            (this.app as any).commands.removeCommand(
+            this.plugin.app.commands.removeCommand(
               `content-highlight:${highlighter}`
             );
             delete this.plugin.settings.highlighters[highlighter];

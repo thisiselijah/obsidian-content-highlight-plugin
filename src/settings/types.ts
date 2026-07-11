@@ -10,7 +10,10 @@ export interface Coords {
 export type EnhancedMenu = Menu & { dom: HTMLElement };
 
 export type EnhancedApp = App & {
-  commands: { executeCommandById: (id: string) => void };
+  commands: { 
+    executeCommandById: (id: string) => void;
+    removeCommand: (id: string) => void;
+  };
 };
 
 export type EnhancedEditor = Editor & {

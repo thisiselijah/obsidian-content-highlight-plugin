@@ -1,4 +1,4 @@
-import { RangeSetBuilder } from "@codemirror/state";
+import { RangeSetBuilder, Extension } from "@codemirror/state";
 import { Decoration, DecorationSet, EditorView, ViewPlugin, ViewUpdate } from "@codemirror/view";
 import { HighlightrSettings } from "src/settings/settingsData";
 
@@ -70,10 +70,15 @@ export const highlightrLivePreviewPlugin = (settings: HighlightrSettings) => {
         }
     }, {
         decorations: v => v.decorations,
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-return
-        provide: (plugin) => (EditorView as any).outerDecorations.of((view: EditorView) => {
-            return view.plugin(plugin)?.outerDecorations ?? Decoration.none;
-        })
+        provide: (plugin) => {
+            const ev = EditorView as unknown as { outerDecorations?: { of: (cb: (view: EditorView) => DecorationSet) => Extension } };
+            if (ev.outerDecorations) {
+                return ev.outerDecorations.of((view: EditorView) => {
+                    return view.plugin(plugin)?.outerDecorations ?? Decoration.none;
+                });
+            }
+            return [] as unknown as Extension;
+        }
     });
 
     return plugin;

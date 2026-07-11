@@ -1,5 +1,4 @@
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export function debounce<T extends (...args: any[]) => any>(
+export function debounce<T extends (...args: unknown[]) => unknown>(
   func: T,
   wait?: number,
   immediate?: boolean
@@ -7,7 +6,7 @@ export function debounce<T extends (...args: any[]) => any>(
   let timeout: number | null;
 
   return function (this: unknown, ...args: Parameters<T>) {
-    // eslint-disable-next-line @typescript-eslint/no-this-alias
+    // eslint-disable-next-line @typescript-eslint/no-this-alias -- Required for debounce context
     const context = this;
 
     const later = function () {

@@ -5,6 +5,8 @@
     "no-duplicate-selectors": null,
     "declaration-block-no-shorthand-property-overrides": null,
     "comment-no-empty": null,
-    "declaration-property-value-no-unknown": null
+    "declaration-property-value-no-unknown": null,
+    "declaration-no-important": null,
+    "plugin/no-unsupported-browser-features": null
   }
 }
