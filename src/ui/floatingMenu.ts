@@ -14,9 +14,9 @@ export class FloatingMenu {
   }
 
   createToolbar() {
-    this.toolbar = document.createElement("div");
+    this.toolbar = activeDocument.createElement("div");
     this.toolbar.addClass("highlightr-floating-toolbar");
-    document.body.appendChild(this.toolbar);
+    activeDocument.body.appendChild(this.toolbar);
 
     this.renderButtons();
   }
@@ -24,7 +24,7 @@ export class FloatingMenu {
   renderButtons() {
     this.toolbar.empty();
     this.plugin.settings.highlighterOrder.forEach((highlighter) => {
-      const btn = document.createElement("button");
+      const btn = activeDocument.createElement("button");
       btn.addClass("highlightr-floating-btn");
       
       const iconName = `highlightr-pen-${highlighter}`.toLowerCase().replace(/ /g, '-');
@@ -35,8 +35,9 @@ export class FloatingMenu {
         e.stopPropagation();
         const view = this.app.workspace.getActiveViewOfType(MarkdownView);
         if (view) {
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
           (this.app as any).commands.executeCommandById(`content-highlight:${highlighter}`);
-          setTimeout(() => {
+          window.setTimeout(() => {
             view.editor.blur();
           }, 20);
           this.hide();
@@ -50,12 +51,12 @@ export class FloatingMenu {
     });
 
     // Add divider
-    const divider = document.createElement("div");
+    const divider = activeDocument.createElement("div");
     divider.addClass("highlightr-floating-divider");
     this.toolbar.appendChild(divider);
 
     // Add clear highlight button
-    const clearBtn = document.createElement("button");
+    const clearBtn = activeDocument.createElement("button");
     clearBtn.addClass("highlightr-floating-btn");
     setIcon(clearBtn, "highlightr-eraser");
     
@@ -64,8 +65,9 @@ export class FloatingMenu {
       e.stopPropagation();
       const view = this.app.workspace.getActiveViewOfType(MarkdownView);
       if (view) {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
         (this.app as any).commands.executeCommandById(`content-highlight:unhighlight`);
-        setTimeout(() => {
+        window.setTimeout(() => {
           view.editor.blur();
         }, 20);
         this.hide();
@@ -77,18 +79,18 @@ export class FloatingMenu {
   }
 
   registerEvents() {
-    this.plugin.registerDomEvent(document, "mouseup", (evt: MouseEvent) => {
-      setTimeout(() => this.checkSelection(), 10);
+    this.plugin.registerDomEvent(activeDocument, "mouseup", (evt: MouseEvent) => {
+      window.setTimeout(() => this.checkSelection(), 10);
     });
     
-    this.plugin.registerDomEvent(document, "mousedown", (evt: MouseEvent) => {
+    this.plugin.registerDomEvent(activeDocument, "mousedown", (evt: MouseEvent) => {
       if (!this.toolbar.contains(evt.target as Node)) {
         this.hide();
       }
     });
 
-    this.plugin.registerDomEvent(document, "keydown", (evt: KeyboardEvent) => {
-      setTimeout(() => this.checkSelection(), 10);
+    this.plugin.registerDomEvent(activeDocument, "keydown", (evt: KeyboardEvent) => {
+      window.setTimeout(() => this.checkSelection(), 10);
     });
   }
 
@@ -103,7 +105,7 @@ export class FloatingMenu {
     if (editor.somethingSelected()) {
       // Get selection coordinates to position the toolbar
       // Wait for DOM to update
-      setTimeout(() => {
+      window.setTimeout(() => {
         const selection = window.getSelection();
         if (!selection || selection.rangeCount === 0 || selection.isCollapsed) {
           this.hide();
@@ -119,10 +121,8 @@ export class FloatingMenu {
         const left = rect.left + (rect.width / 2) - (this.toolbar.offsetWidth / 2);
 
         this.toolbar.addClass("is-visible");
-        this.toolbar.setCssStyles({
-          "top": `${Math.max(10, top)}px`,
-          "left": `${Math.max(10, left)}px`
-        });
+        this.toolbar.style.top = `${Math.max(10, top)}px`;
+        this.toolbar.style.left = `${Math.max(10, left)}px`;
       }, 50);
     } else {
       this.hide();

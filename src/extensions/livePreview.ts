@@ -70,6 +70,7 @@ export const highlightrLivePreviewPlugin = (settings: HighlightrSettings) => {
         }
     }, {
         decorations: v => v.decorations,
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-return
         provide: (plugin) => (EditorView as any).outerDecorations.of((view: EditorView) => {
             return view.plugin(plugin)?.outerDecorations ?? Decoration.none;
         })

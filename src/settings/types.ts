@@ -10,15 +10,15 @@ export interface Coords {
 export type EnhancedMenu = Menu & { dom: HTMLElement };
 
 export type EnhancedApp = App & {
-  commands: { executeCommandById: Function };
+  commands: { executeCommandById: (id: string) => void };
 };
 
 export type EnhancedEditor = Editor & {
-  cursorCoords: Function;
-  coordsAtPos: Function;
-  cm: CodeMirror.Editor & { coordsAtPos: Function };
-  hasFocus: Function;
-  getSelection: Function;
+  cursorCoords: (b: boolean, m: string) => Coords;
+  coordsAtPos: (pos: number) => Coords;
+  cm: CodeMirror.Editor & { coordsAtPos?: (pos: number) => Coords };
+  hasFocus: () => boolean;
+  getSelection: () => string;
 };
 
 declare global {

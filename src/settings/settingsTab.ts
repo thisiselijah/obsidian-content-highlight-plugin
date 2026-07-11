@@ -30,7 +30,7 @@ export class HighlightrSettingTab extends PluginSettingTab {
     //   href: "https://github.com/thisiselijah",
     // });
     // containerEl.createEl("p", { text: " (Original by chetachi)" });
-    new Setting(containerEl).setName("General").setHeading();
+    new Setting(containerEl).setName("Highlightr").setHeading();
 
 
 
@@ -69,12 +69,11 @@ export class HighlightrSettingTab extends PluginSettingTab {
 
     const styleDemo = () => {
       const d = createEl("p", { cls: "highlighter-style-demo" });
-      d.innerHTML = `
-      <span style="background:#FFB7EACC;padding: .125em .125em;--lowlight-background: var(--background-primary);border-radius: 0;background-image: linear-gradient(360deg,rgba(255, 255, 255, 0) 40%,var(--lowlight-background) 40%) !important;">Lowlight</span>
-      <span style="background:#FFB7EACC;--floating-background: var(--background-primary);border-radius: 0;padding-bottom: 5px;background-image: linear-gradient(360deg,rgba(255, 255, 255, 0) 28%,var(--floating-background) 28%) !important;">Floating</span>
-      <span style="background:#FFB7EACC;padding: 0.1em 0.4em;border-radius: 0.8em 0.3em;-webkit-box-decoration-break: clone;box-decoration-break: clone;text-shadow: 0 0 0.75em var(--background-primary-alt);">Realistic</span>
-      <span style="background:#FFB7EACC;padding: 0.125em 0.15em;border-radius: 0.2em;-webkit-box-decoration-break: clone;box-decoration-break: clone;">Rounded</span>
-      <span style="background:#FFB7EACC;padding: 0.125em 0.125em;border-radius: 0;-webkit-box-decoration-break: clone;box-decoration-break: clone;--offset-bg: var(--background-primary);background-image: linear-gradient(360deg, rgba(255, 255, 255, 0) 40%, var(--offset-bg) 40%), linear-gradient(to right, var(--offset-bg) 0.5em, transparent 0.5em) !important;">Offset</span>`;
+      d.createEl("span", { text: "Lowlight" }).setAttribute("style", "background:#FFB7EACC;padding: .125em .125em;--lowlight-background: var(--background-primary);border-radius: 0;background-image: linear-gradient(360deg,rgba(255, 255, 255, 0) 40%,var(--lowlight-background) 40%) !important;");
+      d.createEl("span", { text: "Floating" }).setAttribute("style", "background:#FFB7EACC;--floating-background: var(--background-primary);border-radius: 0;padding-bottom: 5px;background-image: linear-gradient(360deg,rgba(255, 255, 255, 0) 28%,var(--floating-background) 28%) !important;");
+      d.createEl("span", { text: "Realistic" }).setAttribute("style", "background:#FFB7EACC;padding: 0.1em 0.4em;border-radius: 0.8em 0.3em;-webkit-box-decoration-break: clone;box-decoration-break: clone;text-shadow: 0 0 0.75em var(--background-primary-alt);");
+      d.createEl("span", { text: "Rounded" }).setAttribute("style", "background:#FFB7EACC;padding: 0.125em 0.15em;border-radius: 0.2em;-webkit-box-decoration-break: clone;box-decoration-break: clone;");
+      d.createEl("span", { text: "Offset" }).setAttribute("style", "background:#FFB7EACC;padding: 0.125em 0.125em;border-radius: 0;-webkit-box-decoration-break: clone;box-decoration-break: clone;--offset-bg: var(--background-primary);background-image: linear-gradient(360deg, rgba(255, 255, 255, 0) 40%, var(--offset-bg) 40%), linear-gradient(to right, var(--offset-bg) 0.5em, transparent 0.5em) !important;");
       return d;
     };
 
@@ -126,7 +125,6 @@ export class HighlightrSettingTab extends PluginSettingTab {
     highlighterSetting
       .then(() => {
         let input = valueInput.inputEl;
-        let currentColor = valueInput.inputEl.value || null;
 
         const colorMap = this.plugin.settings.highlighterOrder.map(
           (highlightKey) => this.plugin.settings.highlighters[highlightKey]
@@ -165,15 +163,16 @@ export class HighlightrSettingTab extends PluginSettingTab {
           let typed = valueInput.inputEl.value.trim().toUpperCase();
           if (!/^#/.test(typed) && typed.length > 0) typed = "#" + typed;
           if (/^#[0-9A-Fa-f]{6}([0-9A-Fa-f]{2})?$/.test(typed)) {
-            try { pickrCreate.setColor(typed); } catch (e) {}
+            try { pickrCreate.setColor(typed); } catch (e) { /* ignore */ }
           }
-          setTimeout(() => { isManualInput = false; }, 50);
+          window.setTimeout(() => { isManualInput = false; }, 50);
         });
 
         // Move pcr-app inside modal on show so Obsidian's focus trap doesn't steal focus
         const modalContainer = containerEl.closest(".modal-content") as HTMLElement;
-        pickrCreate.on("show", (color: any, instance: any) => {
-          const pcrApp = instance.getRoot().app;
+        pickrCreate.on("show", (color: Pickr.HSVaColor | null, instance: Pickr) => {
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-explicit-any
+          const pcrApp = (instance.getRoot() as any).app;
           if (pcrApp && modalContainer && !modalContainer.contains(pcrApp)) {
             modalContainer.appendChild(pcrApp);
           }
@@ -185,18 +184,17 @@ export class HighlightrSettingTab extends PluginSettingTab {
             input.trigger("change");
           })
           .on("cancel", function (instance: Pickr) {
-            currentColor = instance.getSelectedColor().toHEXA().toString();
-
-            input.trigger("change");
             instance.hide();
           })
           .on("change", function (color: Pickr.HSVaColor) {
             if (isManualInput) return;
             colorHex = color.toHEXA().toString();
             let newColor;
-            colorHex.length == 6
-              ? (newColor = `${color.toHEXA().toString()}A6`)
-              : (newColor = color.toHEXA().toString());
+            if (colorHex.length == 6) {
+              newColor = `${colorHex}A6`;
+            } else {
+              newColor = colorHex;
+            }
 
             setAttributes(input, {
               value: newColor,
@@ -225,7 +223,7 @@ export class HighlightrSettingTab extends PluginSettingTab {
       .setCta()
       .setIcon("highlightr-save")
       .setTooltip("Save")
-      .onClick(async (buttonEl: any) => {
+      .onClick(async (buttonEl: MouseEvent) => {
         let color = colorInput.inputEl.value.replace(" ", "-");
             let value = valueInput.inputEl.value.trim().toUpperCase();
 
@@ -237,7 +235,7 @@ export class HighlightrSettingTab extends PluginSettingTab {
               if (!this.plugin.settings.highlighterOrder.includes(color)) {
                 this.plugin.settings.highlighterOrder.push(color);
                 this.plugin.settings.highlighters[color] = value;
-                setTimeout(() => {
+                window.setTimeout(() => {
                   dispatchEvent(new Event("Highlightr-NewCommand"));
                 }, 100);
                 await this.plugin.saveSettings();
@@ -247,11 +245,13 @@ export class HighlightrSettingTab extends PluginSettingTab {
                 new Notice("This color already exists");
               }
             } else {
-              color && !value
-                ? new Notice("Highlighter hex code missing")
-                : !color && value
-                ? new Notice("Highlighter name missing")
-                : new Notice("Highlighter values missing");
+              if (color && !value) {
+                new Notice("Highlighter hex code missing");
+              } else if (!color && value) {
+                new Notice("Highlighter name missing");
+              } else {
+                new Notice("Highlighter values missing");
+              }
             }
           });
 
@@ -268,12 +268,14 @@ export class HighlightrSettingTab extends PluginSettingTab {
       forceFallback: true,
       fallbackClass: "highlighter-sortable-fallback",
       easing: "cubic-bezier(1, 0, 0, 1)",
-      onSort: (command: { oldIndex: number; newIndex: number }) => {
-        const arrayResult = this.plugin.settings.highlighterOrder;
-        const [removed] = arrayResult.splice(command.oldIndex, 1);
-        arrayResult.splice(command.newIndex, 0, removed);
-        this.plugin.settings.highlighterOrder = arrayResult;
-        this.plugin.saveSettings();
+      onSort: (command: Sortable.SortableEvent) => {
+        if (command.oldIndex !== undefined && command.newIndex !== undefined) {
+          const arrayResult = this.plugin.settings.highlighterOrder;
+          const [removed] = arrayResult.splice(command.oldIndex, 1);
+          arrayResult.splice(command.newIndex, 0, removed);
+          this.plugin.settings.highlighterOrder = arrayResult;
+          this.plugin.saveSettings().catch(() => {});
+        }
       },
     });
 
@@ -303,10 +305,8 @@ export class HighlightrSettingTab extends PluginSettingTab {
         setting.infoEl.appendChild(colorIcon);
 
         const infoGroup = setting.infoEl.createEl("div", { cls: "highlighter-info-group" });
-        
-        const nameSpan = infoGroup.createEl("span", { text: highlighter, cls: "highlighter-name-span" });
-
-        const valSpan = infoGroup.createEl("span", { text: this.plugin.settings.highlighters[highlighter], cls: "highlighter-val-span" });
+        infoGroup.createEl("span", { text: highlighter, cls: "highlighter-name-span" });
+        infoGroup.createEl("span", { text: this.plugin.settings.highlighters[highlighter], cls: "highlighter-val-span" });
       };
 
       renderNormalMode();
@@ -355,13 +355,14 @@ export class HighlightrSettingTab extends PluginSettingTab {
                   }
                   this.plugin.settings.highlighters[newName] = newVal;
                   delete this.plugin.settings.highlighters[highlighter];
+                  // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
                   (this.app as any).commands.removeCommand(`content-highlight:${highlighter}`);
                 } else {
                   this.plugin.settings.highlighters[highlighter] = newVal;
                 }
                 
                 await this.plugin.saveSettings();
-                setTimeout(() => {
+                window.setTimeout(() => {
                   dispatchEvent(new Event("Highlightr-NewCommand"));
                 }, 100);
                 this.display();
@@ -380,12 +381,13 @@ export class HighlightrSettingTab extends PluginSettingTab {
           .setTooltip("Remove")
           .onClick(async () => {
             new Notice(`${highlighter} highlight deleted`);
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
             (this.app as any).commands.removeCommand(
               `content-highlight:${highlighter}`
             );
             delete this.plugin.settings.highlighters[highlighter];
             this.plugin.settings.highlighterOrder.remove(highlighter);
-            setTimeout(() => {
+            window.setTimeout(() => {
               dispatchEvent(new Event("Highlightr-NewCommand"));
             }, 100);
             await this.plugin.saveSettings();

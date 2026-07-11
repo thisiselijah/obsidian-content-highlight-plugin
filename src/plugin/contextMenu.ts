@@ -14,6 +14,7 @@ export default function contextMenu(
   const selection = editor.getSelection();
 
   menu.addItem((item) => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-member-access
     const itemDom = (item as any).dom as HTMLElement;
     itemDom.addClass("highlighter-button");
     item

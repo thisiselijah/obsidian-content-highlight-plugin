@@ -154,6 +154,7 @@ export default class HighlightrPlugin extends Plugin {
   settings: HighlightrSettings;
   floatingMenu: FloatingMenu;
 
+  // eslint-disable-next-line @typescript-eslint/no-misused-promises
   async onload() {
     console.log(`Highlightr v${this.manifest.version} loaded`);
     addIcons();
@@ -208,9 +209,9 @@ export default class HighlightrPlugin extends Plugin {
       name: "Open Highlightr",
       icon: "highlightr-pen",
       editorCallback: (editor: EnhancedEditor) => {
-        !document.querySelector(".menu.highlighter-container")
-          ? highlighterMenu(this.app, this.settings, editor)
-          : true;
+        if (!activeDocument.querySelector(".menu.highlighter-container")) {
+          highlighterMenu(this.app, this.settings, editor);
+        }
       },
     });
 
@@ -237,7 +238,7 @@ export default class HighlightrPlugin extends Plugin {
 
   
   reloadStyles(settings: HighlightrSettings) {
-    let currentSheet = document.querySelector("style#highlightr-styles");
+    let currentSheet = activeDocument.querySelector("style#highlightr-styles");
     if (currentSheet) {
       currentSheet.remove();
     }
@@ -276,7 +277,7 @@ export default class HighlightrPlugin extends Plugin {
             currentSelEnd += localDiff;
         };
 
-        processRegex(/\<mark.*?\>(.*?)\<\/mark\>/g);
+        processRegex(/<mark.*?>(.*?)<\/mark>/g);
         processRegex(/==(.*?)==\{[a-zA-Z0-9_\-\s]+\}/g);
         processRegex(/==(.*?)==/g);
 
@@ -412,23 +413,23 @@ export default class HighlightrPlugin extends Plugin {
   };
 
   updateStyle = () => {
-    document.body.classList.toggle(
+    activeDocument.body.classList.toggle(
       "highlightr-lowlight",
       this.settings.highlighterStyle === "lowlight"
     );
-    document.body.classList.toggle(
+    activeDocument.body.classList.toggle(
       "highlightr-floating",
       this.settings.highlighterStyle === "floating"
     );
-    document.body.classList.toggle(
+    activeDocument.body.classList.toggle(
       "highlightr-rounded",
       this.settings.highlighterStyle === "rounded"
     );
-    document.body.classList.toggle(
+    activeDocument.body.classList.toggle(
       "highlightr-realistic",
       this.settings.highlighterStyle === "realistic"
     );
-    document.body.classList.toggle(
+    activeDocument.body.classList.toggle(
       "highlightr-offset",
       this.settings.highlighterStyle === "offset"
     );
@@ -449,6 +450,7 @@ export default class HighlightrPlugin extends Plugin {
   };
 
   async loadSettings() {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     this.settings = Object.assign({}, DEFAULT_SETTINGS, await this.loadData());
   }
 
