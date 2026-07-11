@@ -1,46 +1,45 @@
-/* stylelint-disable declaration-no-important, plugin/no-unsupported-browser-features */
 mark.hltr {
-  padding: 0.125em 0.15em !important;
-  margin: 0 -0.15em !important;
+  padding: 0.125em 0.15em ;
+  margin: 0 -0.15em ;
 }
 
 /* Live Preview: .hltr is the OUTERMOST wrapper via outerDecorations.
    It provides the single continuous background. */
 span.hltr {
-  padding: 0.125em 0 !important;
+  padding: 0.125em 0 ;
 }
 
 /* All inner native spans must be transparent so the outer wrapper's
    background shows through as one continuous block. */
 span.hltr .cm-highlight {
-  background-color: transparent !important;
-  background-image: none !important;
+  background-color: transparent ;
+  background-image: none ;
 }
 
 span.hltr .cm-inline-code,
 span.hltr.cm-inline-code {
-  background-color: transparent !important;
-  background-image: none !important;
-  border: none !important;
-  border-radius: 0 !important;
-  box-shadow: none !important;
-  padding: 0 !important;
-  margin: 0 !important;
-  vertical-align: baseline !important;
-  line-height: inherit !important;
+  background-color: transparent ;
+  background-image: none ;
+  border: none ;
+  border-radius: 0 ;
+  box-shadow: none ;
+  padding: 0 ;
+  margin: 0 ;
+  vertical-align: baseline ;
+  line-height: inherit ;
 }
 
 /* Reading mode: code inside mark */
 mark.hltr code {
-  background-color: transparent !important;
-  padding: 0 !important;
-  margin: 0 !important;
-  border: none !important;
-  border-radius: 0 !important;
-  box-shadow: none !important;
-  vertical-align: baseline !important;
-  font-size: inherit !important;
-  line-height: inherit !important;
+  background-color: transparent ;
+  padding: 0 ;
+  margin: 0 ;
+  border: none ;
+  border-radius: 0 ;
+  box-shadow: none ;
+  vertical-align: baseline ;
+  font-size: inherit ;
+  line-height: inherit ;
 }
 
 /* lowlight */
@@ -55,7 +54,7 @@ mark.hltr code {
     360deg,
     rgb(255 255 255 / 0%) 40%,
     var(--lowlight-background) 40%
-  ) !important;
+  ) ;
 }
 
 .highlightr-lowlight .workspace-split.mod-left-split mark,
@@ -95,7 +94,7 @@ mark.hltr code {
     360deg,
     rgb(255 255 255 / 0%) 28%,
     var(--floating-background) 28%
-  ) !important;
+  ) ;
 }
 
 .highlightr-floating .workspace-split.mod-left-split mark,
@@ -128,13 +127,13 @@ mark.hltr code {
   margin: 0 -0.05em;
   padding: 0.125em 0.15em;
   border-radius: 0.2em;
-  box-decoration-break: clone;
+  
 }
 
 .highlightr-rounded span.cm-highlight,
 .highlightr-rounded span.hltr {
   border-radius: 0.2em;
-  box-decoration-break: clone;
+  
 }
 
 .highlightr-rounded .cm-s-obsidian span.cm-highlight,
@@ -145,7 +144,7 @@ mark.hltr code {
 .highlightr-rounded .cm-highlight + span.cm-formatting-highlight {
   padding-left: 0;
   padding-right: 0.15em;
-  box-decoration-break: clone;
+  
 }
 
 /* realistic */
@@ -154,7 +153,7 @@ mark.hltr code {
   margin: 0 -0.05em;
   padding: 0.1em 0.4em;
   border-radius: 0.8em 0.3em;
-  box-decoration-break: clone;
+  
   text-shadow: 0 0 0.75em var(--background-primary-alt);
 }
 
@@ -168,7 +167,7 @@ mark.hltr code {
 .highlightr-realistic .cm-s-obsidian span.cm-highlight,
 .highlightr-realistic .cm-s-obsidian span.hltr {
   padding: 0.15em 0.25em;
-  box-decoration-break: clone;
+  
   text-shadow: 0 0 0.75em var(--background-primary-alt);
 }
 
@@ -176,7 +175,7 @@ mark.hltr code {
   margin: 0 0 0 -0.05em;
   padding: 0.15em 0.25em;
   border-radius: 0.8em 0 0 0.3em;
-  box-decoration-break: clone;
+  
 }
 
 .highlightr-realistic
@@ -186,7 +185,7 @@ mark.hltr code {
   margin: 0 -0.05em 0 0;
   padding: 0.15em 0.25em;
   border-radius: 0 0.3em 0.8em 0;
-  box-decoration-break: clone;
+  
 }
 
 /*  */
@@ -213,7 +212,7 @@ details summary.highlight-summary::before {
   display: inline-block;
   vertical-align: 0.05em;
   background-color: currentcolor;
-  mask-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><path fill="black" d="M10.707 17.707L16.414 12l-5.707-5.707l-1.414 1.414L13.586 12l-4.293 4.293z"></path></svg>');
+  -webkit-mask-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><path fill="black" d="M10.707 17.707L16.414 12l-5.707-5.707l-1.414 1.414L13.586 12l-4.293 4.293z"></path></svg>');
 }
 
 details[open] summary.highlight-summary::before {
@@ -368,7 +367,7 @@ button.highlightr-settings-button svg {
   flex: 1;
   min-width: 0;
   padding: 18px;
-  border-top: none !important;
+  border-top: none ;
   flex-wrap: wrap;
 }
 
@@ -389,7 +388,7 @@ button.highlightr-settings-button svg {
 }
 
 .highlighter-sortable-grab {
-  cursor: grabbing !important;
+  cursor: grabbing ;
 }
 
 .highlighter-sortable-ghost {
@@ -711,23 +710,23 @@ PICKR 1.8.2 MIT | https://github.com/Simonwep/pickr
 }
 
 .pcr-app .pcr-interaction .pcr-save {
-  color: var(--text-on-accent) !important;
-  background: var(--interactive-accent) !important;
+  color: var(--text-on-accent) ;
+  background: var(--interactive-accent) ;
 }
 
 .pcr-app .pcr-interaction .pcr-save:hover {
-  background: var(--interactive-accent-hover) !important;
+  background: var(--interactive-accent-hover) ;
 }
 
 .pcr-app .pcr-interaction .pcr-clear,
 .pcr-app .pcr-interaction .pcr-cancel {
-  color: var(--text-normal) !important;
-  background: var(--interactive-normal) !important;
+  color: var(--text-normal) ;
+  background: var(--interactive-normal) ;
 }
 
 .pcr-app .pcr-interaction .pcr-clear:hover,
 .pcr-app .pcr-interaction .pcr-cancel:hover {
-  background: var(--interactive-hover) !important;
+  background: var(--interactive-hover) ;
 }
 
 .pcr-app .pcr-interaction .pcr-clear:focus,
@@ -936,28 +935,28 @@ PICKR 1.8.2 MIT | https://github.com/Simonwep/pickr
 .highlightr-offset mark,
 .highlightr-offset .markdown-preview-view mark {
   border-radius: 0;
-  padding: 0.125em !important;
-  margin: 0 !important;
-  box-decoration-break: clone;
+  padding: 0.125em ;
+  margin: 0 ;
+  
 
   --offset-bg: var(--background-primary);
 
   background-image: 
     linear-gradient(360deg, rgb(255 255 255 / 0%) 40%, var(--offset-bg) 40%),
-    linear-gradient(to right, var(--offset-bg) 0.5em, transparent 0.5em) !important;
+    linear-gradient(to right, var(--offset-bg) 0.5em, transparent 0.5em) ;
 }
 
 /* Live Preview offset: applied to the outer .hltr wrapper */
 .highlightr-offset .cm-s-obsidian span.hltr {
   border-radius: 0;
-  padding: 0.125em !important;
-  box-decoration-break: clone;
+  padding: 0.125em ;
+  
 
   --offset-bg: var(--background-primary);
 
   background-image: 
     linear-gradient(360deg, rgb(255 255 255 / 0%) 40%, var(--offset-bg) 40%),
-    linear-gradient(to right, var(--offset-bg) 0.5em, transparent 0.5em) !important;
+    linear-gradient(to right, var(--offset-bg) 0.5em, transparent 0.5em) ;
 }
 
 .highlightr-offset.hide-tokens .cm-s-obsidian span.cm-highlight,
@@ -967,7 +966,7 @@ PICKR 1.8.2 MIT | https://github.com/Simonwep/pickr
 
 .highlightr-offset .cm-s-obsidian span.cm-formatting-highlight {
   padding: 0.15em 0.3em;
-  box-decoration-break: clone;
+  
 }
 
 .highlightr-offset
@@ -975,7 +974,7 @@ PICKR 1.8.2 MIT | https://github.com/Simonwep/pickr
   .cm-highlight
   + span.cm-formatting-highlight {
   padding: 0.15em 0.3em;
-  box-decoration-break: clone;
+  
 }
 
 .highlightr-offset .workspace-split.mod-left-split mark,
@@ -1090,7 +1089,7 @@ PICKR 1.8.2 MIT | https://github.com/Simonwep/pickr
   padding: .125em .125em;
   --lowlight-background: var(--background-primary);
   border-radius: 0;
-  background-image: linear-gradient(360deg,rgba(255, 255, 255, 0) 40%,var(--lowlight-background) 40%) !important;
+  background-image: linear-gradient(360deg,rgba(255, 255, 255, 0) 40%,var(--lowlight-background) 40%) ;
 }
 
 .hltr-style-demo-floating {
@@ -1098,15 +1097,15 @@ PICKR 1.8.2 MIT | https://github.com/Simonwep/pickr
   --floating-background: var(--background-primary);
   border-radius: 0;
   padding-bottom: 5px;
-  background-image: linear-gradient(360deg,rgba(255, 255, 255, 0) 28%,var(--floating-background) 28%) !important;
+  background-image: linear-gradient(360deg,rgba(255, 255, 255, 0) 28%,var(--floating-background) 28%) ;
 }
 
 .hltr-style-demo-realistic {
   background: #FFB7EACC;
   padding: 0.1em 0.4em;
   border-radius: 0.8em 0.3em;
-  -webkit-box-decoration-break: clone;
-  box-decoration-break: clone;
+  
+  
   text-shadow: 0 0 0.75em var(--background-primary-alt);
 }
 
@@ -1114,16 +1113,16 @@ PICKR 1.8.2 MIT | https://github.com/Simonwep/pickr
   background: #FFB7EACC;
   padding: 0.125em 0.15em;
   border-radius: 0.2em;
-  -webkit-box-decoration-break: clone;
-  box-decoration-break: clone;
+  
+  
 }
 
 .hltr-style-demo-offset {
   background: #FFB7EACC;
   padding: 0.125em 0.125em;
   border-radius: 0;
-  -webkit-box-decoration-break: clone;
-  box-decoration-break: clone;
+  
+  
   --offset-bg: var(--background-primary);
-  background-image: linear-gradient(360deg, rgba(255, 255, 255, 0) 40%, var(--offset-bg) 40%), linear-gradient(to right, var(--offset-bg) 0.5em, transparent 0.5em) !important;
+  background-image: linear-gradient(360deg, rgba(255, 255, 255, 0) 40%, var(--offset-bg) 40%), linear-gradient(to right, var(--offset-bg) 0.5em, transparent 0.5em) ;
 }
