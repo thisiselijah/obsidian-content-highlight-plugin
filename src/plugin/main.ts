@@ -19,7 +19,7 @@ function applyColorToLine(
   C2: number,
   newColor: string | undefined,
   colorChangeMode: "entire" | "subsegment"
-): { newLineText: string; handled: boolean } {
+): { newLineText: string; handled: boolean; newC1: number; newC2: number } {
   interface Token { type: "text" | "highlight"; text: string; color?: string; start: number; end: number; }
   const tokens: Token[] = [];
   const regex = /==((?:(?!==).)*?)==(?:\{([a-zA-Z0-9_\-\s]+)\})?/g;
@@ -95,7 +95,7 @@ function applyColorToLine(
       handled = true;
       for (let i = run.start; i < run.end; i++) chars[i].color = targetColor;
     } else {
-      return { newLineText: lineText, handled: false };
+      return { newLineText: lineText, handled: false, newC1: C1, newC2: C2 };
     }
   } else {
     handled = true;
@@ -116,6 +116,9 @@ function applyColorToLine(
 
   let newLineText = "";
   let currentColor: string | undefined = undefined;
+  let newC1 = C1;
+  let newC2 = C2;
+
   for (let i = 0; i < chars.length; i++) {
     const charColor = chars[i].color;
     if (charColor !== currentColor) {
@@ -126,14 +129,22 @@ function applyColorToLine(
       if (charColor !== undefined) newLineText += "==";
       currentColor = charColor;
     }
+
+    if (i === charSelStart) newC1 = newLineText.length;
+    if (i === charSelEnd) newC2 = newLineText.length;
+
     newLineText += chars[i].char;
   }
+
+  if (chars.length === charSelStart) newC1 = newLineText.length;
+  if (chars.length === charSelEnd) newC2 = newLineText.length;
+
   if (currentColor !== undefined) {
     if (currentColor === "native") newLineText += "==";
     else newLineText += `=={${currentColor}}`;
   }
 
-  return { newLineText, handled };
+  return { newLineText, handled, newC1, newC2 };
 }
 
 export default class HighlightrPlugin extends Plugin {
@@ -292,7 +303,6 @@ export default class HighlightrPlugin extends Plugin {
         const selections = editor.listSelections();
         let changes = [];
         let newSelections = [];
-        let needsCustomSelection = false;
 
         const prefix = command.prefix;
         const suffix = command.suffix || prefix;
@@ -304,7 +314,8 @@ export default class HighlightrPlugin extends Plugin {
           const lineStart = from.line;
           const lineEnd = to.line;
 
-          let handledAll = true;
+          let newFromCh = from.ch;
+          let newToCh = to.ch;
 
           for (let i = lineStart; i <= lineEnd; i++) {
             let lineText = editor.getLine(i);
@@ -314,6 +325,9 @@ export default class HighlightrPlugin extends Plugin {
             const res = applyColorToLine(lineText, selStartCh, selEndCh, highlighterKey, this.settings.colorChangeMode);
 
             if (res.handled) {
+              if (i === from.line) newFromCh = res.newC1;
+              if (i === to.line) newToCh = res.newC2;
+
               if (res.newLineText !== lineText) {
                 changes.push({
                   from: { line: i, ch: 0 },
@@ -322,33 +336,29 @@ export default class HighlightrPlugin extends Plugin {
                 });
               }
             } else {
-              handledAll = false;
               changes.push({
                 from: { line: i, ch: selStartCh },
                 to: { line: i, ch: selEndCh },
                 text: `${prefix}${suffix}`
               });
+
+              if (i === from.line) newFromCh = selStartCh + prefix.length;
+              if (i === to.line) newToCh = selEndCh + prefix.length;
             }
           }
 
-          if (!handledAll && from.line === to.line && from.ch === to.ch) {
-            needsCustomSelection = true;
-            newSelections.push({
-              from: { line: to.line, ch: to.ch + prefix.length },
-              to: { line: to.line, ch: to.ch + prefix.length }
-            });
-          } else {
-            // we have to push something so newSelections aligns with selections
-            newSelections.push({
-              from: selection.anchor,
-              to: selection.head
-            });
-          }
+          const newAnchor = (selection.anchor === from) ? { line: from.line, ch: newFromCh } : { line: to.line, ch: newToCh };
+          const newHead = (selection.head === from) ? { line: from.line, ch: newFromCh } : { line: to.line, ch: newToCh };
+
+          newSelections.push({
+            from: newAnchor,
+            to: newHead
+          });
         }
 
         editor.transaction({
           changes: changes,
-          selections: needsCustomSelection ? newSelections : undefined
+          selections: newSelections
         });
       };
 
