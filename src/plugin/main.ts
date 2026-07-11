@@ -8,11 +8,133 @@ import contextMenu from "src/plugin/contextMenu";
 import highlighterMenu from "src/ui/highlighterMenu";
 import { createHighlighterIcons } from "src/icons/customIcons";
 
-import { createStyles } from "src/utils/createStyles";
 import { EnhancedApp, EnhancedEditor } from "src/settings/types";
 import { FloatingMenu } from "src/ui/floatingMenu";
 
 import { highlightrLivePreviewPlugin } from "src/extensions/livePreview";
+
+function applyColorToLine(
+  lineText: string,
+  C1: number,
+  C2: number,
+  newColor: string | undefined,
+  colorChangeMode: "entire" | "subsegment"
+): { newLineText: string; handled: boolean } {
+  interface Token { type: "text" | "highlight"; text: string; color?: string; start: number; end: number; }
+  const tokens: Token[] = [];
+  const regex = /==((?:(?!==).)*?)==(?:\{([a-zA-Z0-9_\-\s]+)\})?/g;
+  let lastIndex = 0;
+  let match;
+  while ((match = regex.exec(lineText)) !== null) {
+    if (match.index > lastIndex) {
+      tokens.push({ type: "text", text: lineText.slice(lastIndex, match.index), start: lastIndex, end: match.index });
+    }
+    tokens.push({ type: "highlight", text: match[1], color: match[2], start: match.index, end: regex.lastIndex });
+    lastIndex = regex.lastIndex;
+  }
+  if (lastIndex < lineText.length) {
+    tokens.push({ type: "text", text: lineText.slice(lastIndex), start: lastIndex, end: lineText.length });
+  }
+
+  const chars: { char: string; color?: string; rawIndex: number }[] = [];
+  for (const token of tokens) {
+    if (token.type === "text") {
+      for (let i = 0; i < token.text.length; i++) {
+        chars.push({ char: token.text[i], color: undefined, rawIndex: token.start + i });
+      }
+    } else {
+      const colorVal = token.color || "native";
+      for (let i = 0; i < token.text.length; i++) {
+        chars.push({ char: token.text[i], color: colorVal, rawIndex: token.start + 2 + i });
+      }
+    }
+  }
+
+  let charSelStart = chars.findIndex(c => c.rawIndex >= C1);
+  if (charSelStart === -1) charSelStart = chars.length;
+  let charSelEnd = chars.findIndex(c => c.rawIndex >= C2);
+  if (charSelEnd === -1) charSelEnd = chars.length;
+
+  interface Run { start: number; end: number; color: string; }
+  const runs: Run[] = [];
+  let currentRun: Run | null = null;
+  for (let i = 0; i < chars.length; i++) {
+    const color = chars[i].color;
+    if (color !== undefined) {
+      if (currentRun && currentRun.color === color) {
+        currentRun.end = i + 1;
+      } else {
+        currentRun = { start: i, end: i + 1, color };
+        runs.push(currentRun);
+      }
+    } else {
+      currentRun = null;
+    }
+  }
+
+  let shouldToggleOff = false;
+  if (newColor !== undefined) {
+    if (charSelStart === charSelEnd) {
+      const run = runs.find(r => r.start <= charSelStart && charSelStart <= r.end);
+      if (run && run.color === newColor) shouldToggleOff = true;
+    } else {
+      let allSame = true;
+      for (let i = charSelStart; i < charSelEnd; i++) {
+        if (chars[i].color !== newColor) { allSame = false; break; }
+      }
+      if (allSame && charSelStart < charSelEnd) shouldToggleOff = true;
+    }
+  }
+
+  const targetColor = shouldToggleOff ? undefined : newColor;
+  let handled = false;
+
+  if (charSelStart === charSelEnd) {
+    const run = runs.find(r => r.start <= charSelStart && charSelStart <= r.end);
+    if (run) {
+      handled = true;
+      for (let i = run.start; i < run.end; i++) chars[i].color = targetColor;
+    } else {
+      return { newLineText: lineText, handled: false };
+    }
+  } else {
+    handled = true;
+    if (colorChangeMode === "entire") {
+      const overlappingRuns = runs.filter(run => !(run.end <= charSelStart || run.start >= charSelEnd));
+      if (overlappingRuns.length > 0) {
+        for (const run of overlappingRuns) {
+          for (let i = run.start; i < run.end; i++) chars[i].color = targetColor;
+        }
+        for (let i = charSelStart; i < charSelEnd; i++) chars[i].color = targetColor;
+      } else {
+        for (let i = charSelStart; i < charSelEnd; i++) chars[i].color = targetColor;
+      }
+    } else {
+      for (let i = charSelStart; i < charSelEnd; i++) chars[i].color = targetColor;
+    }
+  }
+
+  let newLineText = "";
+  let currentColor: string | undefined = undefined;
+  for (let i = 0; i < chars.length; i++) {
+    const charColor = chars[i].color;
+    if (charColor !== currentColor) {
+      if (currentColor !== undefined) {
+        if (currentColor === "native") newLineText += "==";
+        else newLineText += `=={${currentColor}}`;
+      }
+      if (charColor !== undefined) newLineText += "==";
+      currentColor = charColor;
+    }
+    newLineText += chars[i].char;
+  }
+  if (currentColor !== undefined) {
+    if (currentColor === "native") newLineText += "==";
+    else newLineText += `=={${currentColor}}`;
+  }
+
+  return { newLineText, handled };
+}
 
 export default class HighlightrPlugin extends Plugin {
   app: EnhancedApp;
@@ -40,6 +162,9 @@ export default class HighlightrPlugin extends Plugin {
             const color = this.settings.highlighters[colorKey];
             if (color) {
               mark.addClass(`hltr-${colorKey.toLowerCase().replace(/ /g, '-')}`);
+              mark.addClass("hltr");
+              mark.style.setProperty("background-color", color, "important");
+              mark.style.setProperty("--hltr-color", color);
               // Remove the {color} part from text
               nextNode.textContent = nextNode.textContent!.substring(match[0].length);
             }
@@ -104,9 +229,6 @@ export default class HighlightrPlugin extends Plugin {
     let currentSheet = document.querySelector("style#highlightr-styles");
     if (currentSheet) {
       currentSheet.remove();
-      createStyles(settings);
-    } else {
-      createStyles(settings);
     }
   }
 
@@ -170,6 +292,7 @@ export default class HighlightrPlugin extends Plugin {
         const selections = editor.listSelections();
         let changes = [];
         let newSelections = [];
+        let needsCustomSelection = false;
 
         const prefix = command.prefix;
         const suffix = command.suffix || prefix;
@@ -178,62 +301,54 @@ export default class HighlightrPlugin extends Plugin {
           const from = selection.anchor.line < selection.head.line || (selection.anchor.line === selection.head.line && selection.anchor.ch <= selection.head.ch) ? selection.anchor : selection.head;
           const to = selection.anchor.line < selection.head.line || (selection.anchor.line === selection.head.line && selection.anchor.ch <= selection.head.ch) ? selection.head : selection.anchor;
           
-          const selectedText = editor.getRange(from, to);
+          const lineStart = from.line;
+          const lineEnd = to.line;
 
-          const preStart = {
-            line: from.line - command.line,
-            ch: Math.max(0, from.ch - prefix.length),
-          };
-          const pre = editor.getRange(preStart, from);
+          let handledAll = true;
 
-          const sufEnd = {
-            line: to.line + command.line,
-            ch: to.ch + suffix.length,
-          };
-          const suf = editor.getRange(to, sufEnd);
+          for (let i = lineStart; i <= lineEnd; i++) {
+            let lineText = editor.getLine(i);
+            let selStartCh = (i === from.line) ? from.ch : 0;
+            let selEndCh = (i === to.line) ? to.ch : lineText.length;
 
-          const preLast = pre.slice(-1);
-          const prefixLast = prefix.trimStart().slice(-1);
+            const res = applyColorToLine(lineText, selStartCh, selEndCh, highlighterKey, this.settings.colorChangeMode);
 
-          if (suf === suffix.trimEnd() && preLast === prefixLast && selectedText) {
-            changes.push({
-              from: preStart,
-              to: sufEnd,
-              text: selectedText
-            });
-            const newToCh = from.line === to.line
-              ? to.ch - prefix.length
-              : to.ch;
-            newSelections.push({
-              from: { line: to.line, ch: newToCh },
-              to: { line: to.line, ch: newToCh }
-            });
-          } else {
-            changes.push({
-              from: from,
-              to: to,
-              text: `${prefix}${selectedText}${suffix}`
-            });
-            if (selectedText.length === 0) {
-              newSelections.push({
-                from: { line: from.line, ch: from.ch + prefix.length },
-                to: { line: to.line, ch: to.ch + prefix.length }
-              });
+            if (res.handled) {
+              if (res.newLineText !== lineText) {
+                changes.push({
+                  from: { line: i, ch: 0 },
+                  to: { line: i, ch: lineText.length },
+                  text: res.newLineText
+                });
+              }
             } else {
-              const newToCh = from.line === to.line 
-                ? to.ch + prefix.length + suffix.length 
-                : to.ch + suffix.length;
-              newSelections.push({
-                from: { line: to.line, ch: newToCh },
-                to: { line: to.line, ch: newToCh }
+              handledAll = false;
+              changes.push({
+                from: { line: i, ch: selStartCh },
+                to: { line: i, ch: selEndCh },
+                text: `${prefix}${suffix}`
               });
             }
+          }
+
+          if (!handledAll && from.line === to.line && from.ch === to.ch) {
+            needsCustomSelection = true;
+            newSelections.push({
+              from: { line: to.line, ch: to.ch + prefix.length },
+              to: { line: to.line, ch: to.ch + prefix.length }
+            });
+          } else {
+            // we have to push something so newSelections aligns with selections
+            newSelections.push({
+              from: selection.anchor,
+              to: selection.head
+            });
           }
         }
 
         editor.transaction({
           changes: changes,
-          selections: newSelections
+          selections: needsCustomSelection ? newSelections : undefined
         });
       };
 

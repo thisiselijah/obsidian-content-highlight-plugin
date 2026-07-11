@@ -30,7 +30,7 @@ export class HighlightrSettingTab extends PluginSettingTab {
     //   href: "https://github.com/thisiselijah",
     // });
     // containerEl.createEl("p", { text: " (Original by chetachi)" });
-    containerEl.createEl("h2", { text: "Plugin Settings" });
+    new Setting(containerEl).setName("Plugin Settings").setHeading();
 
 
 
@@ -69,7 +69,7 @@ export class HighlightrSettingTab extends PluginSettingTab {
 
     const styleDemo = () => {
       const d = createEl("p");
-      d.setAttribute("style", "font-size: .925em; margin-top: 12px; display: flex; gap: 16px; flex-wrap: wrap; align-items: center;");
+      d.setCssStyles({ "font-size": ".925em", "margin-top": "12px", "display": "flex", "gap": "16px", "flex-wrap": "wrap", "align-items": "center" });
       d.innerHTML = `
       <span style="background:#FFB7EACC;padding: .125em .125em;--lowlight-background: var(--background-primary);border-radius: 0;background-image: linear-gradient(360deg,rgba(255, 255, 255, 0) 40%,var(--lowlight-background) 40%) !important;">Lowlight</span>
       <span style="background:#FFB7EACC;--floating-background: var(--background-primary);border-radius: 0;padding-bottom: 5px;background-image: linear-gradient(360deg,rgba(255, 255, 255, 0) 28%,var(--floating-background) 28%) !important;">Floating</span>
@@ -81,6 +81,22 @@ export class HighlightrSettingTab extends PluginSettingTab {
 
     stylesSetting.infoEl.appendChild(styleDemo());
 
+    new Setting(containerEl)
+      .setName("Highlight color change behavior")
+      .setDesc("Choose what happens when you change the color of a sub-segment inside an already highlighted block.")
+      .addDropdown((dropdown) => {
+        dropdown.addOptions({
+          "entire": "Change entire highlight color",
+          "subsegment": "Change selected sub-segment color only"
+        });
+        dropdown
+          .setValue(this.plugin.settings.colorChangeMode || "entire")
+          .onChange(async (val) => {
+            this.plugin.settings.colorChangeMode = val as "entire" | "subsegment";
+            await this.plugin.saveSettings();
+          });
+      });
+
     const highlighterSetting = new Setting(containerEl);
 
     highlighterSetting
@@ -90,12 +106,15 @@ export class HighlightrSettingTab extends PluginSettingTab {
         `Create a highlight color by entering a name and a hex code. Use the picker to choose visually. Drag items to reorder.`
       );
     const inputSpan = highlighterSetting.controlEl.createEl("span", {
-      cls: "highlighter-settings-inputs",
-      attr: { style: "display: flex; gap: 6px; flex-wrap: wrap; justify-content: space-between; width: 100%;" }
+      cls: "highlighter-settings-inputs"
     });
+    inputSpan.setCssStyles({ "display": "flex", "gap": "6px", "flex-wrap": "wrap", "justify-content": "space-between", "width": "100%" });
 
-    const leftGroup = inputSpan.createEl("span", { attr: { style: "display: flex; gap: 8px; align-items: center;" } });
-    const rightGroup = inputSpan.createEl("span", { attr: { style: "display: flex; gap: 20px; align-items: center;" } });
+    const leftGroup = inputSpan.createEl("span");
+    leftGroup.setCssStyles({ "display": "flex", "gap": "8px", "align-items": "center" });
+    
+    const rightGroup = inputSpan.createEl("span");
+    rightGroup.setCssStyles({ "display": "flex", "gap": "20px", "align-items": "center" });
 
     const colorInput = new TextComponent(leftGroup);
     colorInput.setPlaceholder("Color name");
@@ -263,7 +282,6 @@ export class HighlightrSettingTab extends PluginSettingTab {
     });
 
     this.plugin.settings.highlighterOrder.forEach((highlighter) => {
-      const icon = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8" fill="${this.plugin.settings.highlighters[highlighter]}"/></svg>`;
       const settingItem = highlightersContainer.createEl("div");
       settingItem.addClass("highlighter-item-draggable");
       const setting = new Setting(settingItem)
@@ -271,39 +289,56 @@ export class HighlightrSettingTab extends PluginSettingTab {
 
       const colorIcon = createEl("span");
       colorIcon.addClass("highlighter-setting-icon");
-      colorIcon.innerHTML = icon;
       
-      setting.infoEl.style.display = "flex";
-      setting.infoEl.style.alignItems = "center";
-      setting.infoEl.style.flex = "1";
+      const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+      svg.setAttribute("viewBox", "0 0 24 24");
+      const circle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+      circle.setAttribute("cx", "12");
+      circle.setAttribute("cy", "12");
+      circle.setAttribute("r", "8");
+      circle.setAttribute("fill", this.plugin.settings.highlighters[highlighter]);
+      svg.appendChild(circle);
+      colorIcon.appendChild(svg);
+      
+      setting.infoEl.setCssStyles({
+        "display": "flex",
+        "align-items": "center",
+        "flex": "1"
+      });
 
       const renderNormalMode = () => {
         setting.infoEl.empty();
         setting.infoEl.appendChild(colorIcon);
 
         const infoGroup = setting.infoEl.createEl("div", { cls: "highlighter-info-group" });
-        infoGroup.style.display = "flex";
-        infoGroup.style.alignItems = "baseline";
-        infoGroup.style.gap = "8px";
-        infoGroup.style.flex = "1";
-        infoGroup.style.minWidth = "0";
+        infoGroup.setCssStyles({
+          "display": "flex",
+          "align-items": "baseline",
+          "gap": "8px",
+          "flex": "1",
+          "min-width": "0"
+        });
         
         const nameSpan = infoGroup.createEl("span", { text: highlighter });
-        nameSpan.style.flexGrow = "1";
-        nameSpan.style.flexShrink = "1";
-        nameSpan.style.flexBasis = "200px";
-        nameSpan.style.minWidth = "0";
-        nameSpan.style.overflow = "hidden";
-        nameSpan.style.textOverflow = "ellipsis";
-        nameSpan.style.whiteSpace = "nowrap";
+        nameSpan.setCssStyles({
+          "flex-grow": "1",
+          "flex-shrink": "1",
+          "flex-basis": "200px",
+          "min-width": "0",
+          "overflow": "hidden",
+          "text-overflow": "ellipsis",
+          "white-space": "nowrap"
+        });
 
         const valSpan = infoGroup.createEl("span", { text: this.plugin.settings.highlighters[highlighter] });
-        valSpan.style.flexShrink = "0";
-        valSpan.style.whiteSpace = "nowrap";
-        valSpan.style.fontFamily = "var(--font-monospace)";
-        valSpan.style.textTransform = "uppercase";
-        valSpan.style.color = "var(--text-muted)";
-        valSpan.style.fontSize = "0.85em";
+        valSpan.setCssStyles({
+          "flex-shrink": "0",
+          "white-space": "nowrap",
+          "font-family": "var(--font-monospace)",
+          "text-transform": "uppercase",
+          "color": "var(--text-muted)",
+          "font-size": "0.85em"
+        });
       };
 
       renderNormalMode();
@@ -322,21 +357,27 @@ export class HighlightrSettingTab extends PluginSettingTab {
             if (!isEditing) {
               isEditing = true;
               setting.infoEl.empty();
-              setting.infoEl.style.display = "flex";
-              setting.infoEl.style.alignItems = "center";
-              setting.infoEl.style.gap = "8px";
+              setting.infoEl.setCssStyles({
+                "display": "flex",
+                "align-items": "center",
+                "gap": "8px"
+              });
               setting.infoEl.appendChild(colorIcon);
 
               nameInputEl = setting.infoEl.createEl("input", { type: "text", value: highlighter });
-              nameInputEl.style.flex = "0 0 100px";
-              nameInputEl.style.width = "100px";
-              nameInputEl.style.minWidth = "100px";
+              nameInputEl.setCssStyles({
+                "flex": "0 0 100px",
+                "width": "100px",
+                "min-width": "100px"
+              });
 
               valInputEl = setting.infoEl.createEl("input", { type: "text", value: this.plugin.settings.highlighters[highlighter] });
-              valInputEl.style.flex = "1";
-              valInputEl.style.minWidth = "80px";
-              valInputEl.style.fontFamily = "var(--font-monospace)";
-              valInputEl.style.textTransform = "uppercase";
+              valInputEl.setCssStyles({
+                "flex": "1",
+                "min-width": "80px",
+                "font-family": "var(--font-monospace)",
+                "text-transform": "uppercase"
+              });
 
               button.setIcon("highlightr-save");
               button.setTooltip("Save");

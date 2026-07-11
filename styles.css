@@ -1,7 +1,50 @@
-/*highlighter style*/
+mark.hltr {
+  padding: 0.125em 0.15em !important;
+  margin: 0 -0.15em !important;
+}
+
+/* Live Preview: .hltr is the OUTERMOST wrapper via outerDecorations.
+   It provides the single continuous background. */
+span.hltr {
+  padding: 0.125em 0 !important;
+}
+
+/* All inner native spans must be transparent so the outer wrapper's
+   background shows through as one continuous block. */
+span.hltr .cm-highlight {
+  background-color: transparent !important;
+  background-image: none !important;
+}
+
+span.hltr .cm-inline-code,
+span.hltr.cm-inline-code {
+  background-color: transparent !important;
+  background-image: none !important;
+  border: none !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  vertical-align: baseline !important;
+  line-height: inherit !important;
+}
+
+/* Reading mode: code inside mark */
+mark.hltr code {
+  background-color: transparent !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  border: none !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  vertical-align: baseline !important;
+  font-size: inherit !important;
+  line-height: inherit !important;
+}
 /*lowlight*/
 .highlightr-lowlight mark,
 .highlightr-lowlight span.cm-highlight,
+.highlightr-lowlight span.hltr,
 .highlightr-lowlight .markdown-preview-view mark {
   --lowlight-background: var(--background-primary);
   border-radius: 0;
@@ -14,12 +57,14 @@
 
 .highlightr-lowlight .workspace-split.mod-left-split mark,
 .highlightr-lowlight .workspace-split.mod-left-split span.cm-highlight,
+.highlightr-lowlight .workspace-split.mod-left-split span.hltr,
 .highlightr-lowlight
   .workspace-split.mod-left-split
   .markdown-preview-view
   mark,
 .highlightr-lowlight .workspace-split.mod-right-split mark,
 .highlightr-lowlight .workspace-split.mod-right-split span.cm-highlight,
+.highlightr-lowlight .workspace-split.mod-right-split span.hltr,
 .highlightr-lowlight
   .workspace-split.mod-right-split
   .markdown-preview-view
@@ -29,6 +74,7 @@
 
 .highlightr-lowlight .admonition-content mark,
 .highlightr-lowlight .admonition-content span.cm-highlight,
+.highlightr-lowlight .admonition-content span.hltr,
 .highlightr-lowlight .admonition-content > .markdown-preview-view mark {
   --lowlight-background: var(--background-primary-alt);
 }
@@ -36,6 +82,7 @@
 /*floating*/
 .highlightr-floating mark,
 .highlightr-floating span.cm-highlight,
+.highlightr-floating span.hltr,
 .highlightr-floating .markdown-preview-view mark {
   --floating-background: var(--background-primary);
   border-radius: 0;
@@ -49,12 +96,14 @@
 
 .highlightr-floating .workspace-split.mod-left-split mark,
 .highlightr-floating .workspace-split.mod-left-split span.cm-highlight,
+.highlightr-floating .workspace-split.mod-left-split span.hltr,
 .highlightr-floating
   .workspace-split.mod-left-split
   .markdown-preview-view
   mark,
 .highlightr-floating .workspace-split.mod-right-split mark,
 .highlightr-floating .workspace-split.mod-right-split span.cm-highlight,
+.highlightr-floating .workspace-split.mod-right-split span.hltr,
 .highlightr-floating
   .workspace-split.mod-right-split
   .markdown-preview-view
@@ -64,6 +113,7 @@
 
 .highlightr-floating .admonition-content mark,
 .highlightr-floating .admonition-content span.cm-highlight,
+.highlightr-floating .admonition-content span.hltr,
 .highlightr-floating .admonition-content > .markdown-preview-view mark {
   --floating-background: var(--background-primary-alt);
 }
@@ -78,13 +128,15 @@
   box-decoration-break: clone;
 }
 
-.highlightr-rounded span.cm-highlight {
+.highlightr-rounded span.cm-highlight,
+.highlightr-rounded span.hltr {
   border-radius: 0.2em;
   -webkit-box-decoration-break: clone;
   box-decoration-break: clone;
 }
 
-.highlightr-rounded .cm-s-obsidian span.cm-highlight {
+.highlightr-rounded .cm-s-obsidian span.cm-highlight,
+.highlightr-rounded .cm-s-obsidian span.hltr {
   font-weight: inherit;
 }
 
@@ -107,11 +159,14 @@
 }
 
 .highlightr-realistic.hide-tokens .cm-s-obsidian span.cm-highlight,
-.hide-tokens.highlightr-realistic .cm-s-obsidian span.cm-highlight {
+.hide-tokens.highlightr-realistic .cm-s-obsidian span.cm-highlight,
+.highlightr-realistic.hide-tokens .cm-s-obsidian span.hltr,
+.hide-tokens.highlightr-realistic .cm-s-obsidian span.hltr {
   border-radius: 0.8em 0.3em;
 }
 
-.highlightr-realistic .cm-s-obsidian span.cm-highlight {
+.highlightr-realistic .cm-s-obsidian span.cm-highlight,
+.highlightr-realistic .cm-s-obsidian span.hltr {
   padding: 0.15em 0.25em;
   -webkit-box-decoration-break: clone;
   box-decoration-break: clone;
@@ -833,7 +888,20 @@ PICKR 1.8.2 MIT | https://github.com/Simonwep/pickr
 .highlightr-offset mark,
 .highlightr-offset .markdown-preview-view mark {
   border-radius: 0;
-  padding: 0.125em 0.125em;
+  padding: 0.125em 0.125em !important;
+  margin: 0 !important;
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
+  --offset-bg: var(--background-primary);
+  background-image: 
+    linear-gradient(360deg, rgba(255, 255, 255, 0) 40%, var(--offset-bg) 40%),
+    linear-gradient(to right, var(--offset-bg) 0.5em, transparent 0.5em) !important;
+}
+
+/* Live Preview offset: applied to the outer .hltr wrapper */
+.highlightr-offset .cm-s-obsidian span.hltr {
+  border-radius: 0;
+  padding: 0.125em 0.125em !important;
   -webkit-box-decoration-break: clone;
   box-decoration-break: clone;
   --offset-bg: var(--background-primary);
@@ -845,24 +913,6 @@ PICKR 1.8.2 MIT | https://github.com/Simonwep/pickr
 .highlightr-offset.hide-tokens .cm-s-obsidian span.cm-highlight,
 .hide-tokens.highlightr-offset .cm-s-obsidian span.cm-highlight {
   border-radius: 0;
-}
-
-.highlightr-offset .cm-s-obsidian span.hltr-first-char {
-  padding: 0.125em 0.125em;
-  -webkit-box-decoration-break: clone;
-  box-decoration-break: clone;
-  --offset-bg: var(--background-primary);
-  background-image: 
-    linear-gradient(360deg, rgba(255, 255, 255, 0) 40%, var(--offset-bg) 40%),
-    linear-gradient(to right, var(--offset-bg) 0.5em, transparent 0.5em) !important;
-}
-
-.highlightr-offset .cm-s-obsidian span.cm-highlight:not(.hltr-first-char) {
-  padding: 0.125em 0.125em;
-  -webkit-box-decoration-break: clone;
-  box-decoration-break: clone;
-  --offset-bg: var(--background-primary);
-  background-image: linear-gradient(360deg, rgba(255, 255, 255, 0) 40%, var(--offset-bg) 40%) !important;
 }
 
 .highlightr-offset .cm-s-obsidian span.cm-formatting-highlight {
@@ -881,9 +931,11 @@ PICKR 1.8.2 MIT | https://github.com/Simonwep/pickr
 }
 
 .highlightr-offset .workspace-split.mod-left-split mark,
+.highlightr-offset .workspace-split.mod-left-split span.hltr,
 .highlightr-offset .workspace-split.mod-left-split span.cm-highlight,
 .highlightr-offset .workspace-split.mod-left-split .markdown-preview-view mark,
 .highlightr-offset .workspace-split.mod-right-split mark,
+.highlightr-offset .workspace-split.mod-right-split span.hltr,
 .highlightr-offset .workspace-split.mod-right-split span.cm-highlight,
 .highlightr-offset .workspace-split.mod-right-split .markdown-preview-view mark {
   --offset-bg: var(--background-secondary);

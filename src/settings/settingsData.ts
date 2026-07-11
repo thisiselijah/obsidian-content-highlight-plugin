@@ -16,6 +16,7 @@ export interface HighlightrSettings {
   enableFloatingMenu: boolean;
   highlighters: Highlighters;
   highlighterOrder: string[];
+  colorChangeMode: "entire" | "subsegment";
 }
 
 const DEFAULT_SETTINGS: HighlightrSettings = {
@@ -33,6 +34,7 @@ const DEFAULT_SETTINGS: HighlightrSettings = {
     Grey: "#CACFD9A6",
   },
   highlighterOrder: [],
+  colorChangeMode: "entire",
 };
 
 DEFAULT_SETTINGS.highlighterOrder = Object.keys(DEFAULT_SETTINGS.highlighters);

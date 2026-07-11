@@ -16,9 +16,11 @@ export class FloatingMenu {
   createToolbar() {
     this.toolbar = document.createElement("div");
     this.toolbar.addClass("highlightr-floating-toolbar");
-    this.toolbar.style.display = "none";
-    this.toolbar.style.position = "absolute";
-    this.toolbar.style.zIndex = "1000";
+    this.toolbar.setCssStyles({
+      "display": "none",
+      "position": "absolute",
+      "z-index": "1000"
+    });
     document.body.appendChild(this.toolbar);
 
     this.renderButtons();
@@ -54,9 +56,11 @@ export class FloatingMenu {
 
     // Add divider
     const divider = document.createElement("div");
-    divider.style.width = "1px";
-    divider.style.backgroundColor = "var(--background-modifier-border)";
-    divider.style.margin = "2px 2px";
+    divider.setCssStyles({
+      "width": "1px",
+      "background-color": "var(--background-modifier-border)",
+      "margin": "2px 2px"
+    });
     this.toolbar.appendChild(divider);
 
     // Add clear highlight button
@@ -123,9 +127,11 @@ export class FloatingMenu {
         const top = rect.top - toolbarHeight - 10;
         const left = rect.left + (rect.width / 2) - (this.toolbar.offsetWidth / 2);
 
-        this.toolbar.style.top = `${Math.max(10, top)}px`;
-        this.toolbar.style.left = `${Math.max(10, left)}px`;
-        this.toolbar.style.display = "flex";
+        this.toolbar.setCssStyles({
+          "top": `${Math.max(10, top)}px`,
+          "left": `${Math.max(10, left)}px`,
+          "display": "flex"
+        });
       }, 50);
     } else {
       this.hide();
@@ -133,7 +139,7 @@ export class FloatingMenu {
   }
 
   hide() {
-    this.toolbar.style.display = "none";
+    this.toolbar.setCssStyles({ "display": "none" });
   }
   
   destroy() {

@@ -20,3 +20,10 @@ export type EnhancedEditor = Editor & {
   hasFocus: Function;
   getSelection: Function;
 };
+
+declare global {
+  interface HTMLElement {
+    setCssStyles(styles: Record<string, string>): void;
+    setCssProps(props: Record<string, string>): void;
+  }
+}
