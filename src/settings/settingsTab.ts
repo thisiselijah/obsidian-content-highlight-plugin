@@ -30,7 +30,7 @@ export class HighlightrSettingTab extends PluginSettingTab {
     //   href: "https://github.com/thisiselijah",
     // });
     // containerEl.createEl("p", { text: " (Original by chetachi)" });
-    new Setting(containerEl).setName("Plugin Settings").setHeading();
+    new Setting(containerEl).setName("General").setHeading();
 
 
 
