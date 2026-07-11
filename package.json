@@ -17,9 +17,9 @@
     "@types/node": "14.14.37",
     "@types/sortablejs": "1.13.0",
     "obsidian": "0.16.0",
-    "rollup": "2.79.1",
-    "tslib": "^2.6.2",
-    "typescript": "^5.3.3"
+    "rollup": "2.79.2",
+    "tslib": "2.6.2",
+    "typescript": "5.3.3"
   },
   "dependencies": {
     "@codemirror/state": "6.7.1",
