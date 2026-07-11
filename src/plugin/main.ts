@@ -208,7 +208,7 @@ export default class HighlightrPlugin extends Plugin {
       name: "Open Highlightr",
       icon: "highlightr-pen",
       editorCallback: (editor: EnhancedEditor) => {
-        !document.querySelector(".menu.highlighterContainer")
+        !document.querySelector(".menu.highlighter-container")
           ? highlighterMenu(this.app, this.settings, editor)
           : true;
       },

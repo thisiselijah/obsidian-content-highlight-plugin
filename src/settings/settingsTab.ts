@@ -221,7 +221,7 @@ export class HighlightrSettingTab extends PluginSettingTab {
 
     const addButton = new ButtonComponent(rightGroup);
     addButton
-      .setClass("HighlightrSettingsButton")
+      .setClass("highlightr-settings-button")
       .setCta()
       .setIcon("highlightr-save")
       .setTooltip("Save")
@@ -256,7 +256,7 @@ export class HighlightrSettingTab extends PluginSettingTab {
           });
 
     const highlightersContainer = containerEl.createEl("div", {
-      cls: "HighlightrSettingsTabsContainer",
+      cls: "highlightr-settings-tabs-container",
     });
 
     Sortable.create(highlightersContainer, {
@@ -317,7 +317,7 @@ export class HighlightrSettingTab extends PluginSettingTab {
 
       setting.addButton((button) => {
         button
-          .setClass("HighlightrSettingsButton")
+          .setClass("highlightr-settings-button")
           .setCta()
           .setIcon("pencil")
           .setTooltip("Edit")
@@ -374,7 +374,7 @@ export class HighlightrSettingTab extends PluginSettingTab {
 
       setting.addButton((button) => {
         button
-          .setClass("HighlightrSettingsButton")
+          .setClass("highlightr-settings-button")
           .setWarning()
           .setIcon("highlightr-delete")
           .setTooltip("Remove")

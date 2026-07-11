@@ -21,7 +21,7 @@ const highlighterMenu = (
     menu.setUseNativeMenu(false);
 
     const menuDom = menu.dom;
-    menuDom.addClass("highlighterContainer");
+    menuDom.addClass("highlighter-container");
 
     settings.highlighterOrder.forEach((highlighter) => {
       menu.addItem((highlighterItem) => {

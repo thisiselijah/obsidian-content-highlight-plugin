@@ -41,16 +41,18 @@ mark.hltr code {
   font-size: inherit !important;
   line-height: inherit !important;
 }
-/*lowlight*/
+
+/* lowlight */
 .highlightr-lowlight mark,
 .highlightr-lowlight span.cm-highlight,
 .highlightr-lowlight span.hltr,
 .highlightr-lowlight .markdown-preview-view mark {
   --lowlight-background: var(--background-primary);
+
   border-radius: 0;
   background-image: linear-gradient(
     360deg,
-    rgba(255, 255, 255, 0) 40%,
+    rgb(255 255 255 / 0%) 40%,
     var(--lowlight-background) 40%
   ) !important;
 }
@@ -79,17 +81,18 @@ mark.hltr code {
   --lowlight-background: var(--background-primary-alt);
 }
 
-/*floating*/
+/* floating */
 .highlightr-floating mark,
 .highlightr-floating span.cm-highlight,
 .highlightr-floating span.hltr,
 .highlightr-floating .markdown-preview-view mark {
   --floating-background: var(--background-primary);
+
   border-radius: 0;
   padding-bottom: 5px;
   background-image: linear-gradient(
     360deg,
-    rgba(255, 255, 255, 0) 28%,
+    rgb(255 255 255 / 0%) 28%,
     var(--floating-background) 28%
   ) !important;
 }
@@ -118,20 +121,18 @@ mark.hltr code {
   --floating-background: var(--background-primary-alt);
 }
 
-/*rounded*/
+/* rounded */
 .highlightr-rounded mark,
 .highlightr-rounded .markdown-preview-view mark {
   margin: 0 -0.05em;
   padding: 0.125em 0.15em;
   border-radius: 0.2em;
-  -webkit-box-decoration-break: clone;
   box-decoration-break: clone;
 }
 
 .highlightr-rounded span.cm-highlight,
 .highlightr-rounded span.hltr {
   border-radius: 0.2em;
-  -webkit-box-decoration-break: clone;
   box-decoration-break: clone;
 }
 
@@ -141,19 +142,17 @@ mark.hltr code {
 }
 
 .highlightr-rounded .cm-highlight + span.cm-formatting-highlight {
-  padding-left: 0em;
+  padding-left: 0;
   padding-right: 0.15em;
-  -webkit-box-decoration-break: clone;
   box-decoration-break: clone;
 }
 
-/*realistic*/
+/* realistic */
 .highlightr-realistic mark,
 .highlightr-realistic .markdown-preview-view mark {
   margin: 0 -0.05em;
   padding: 0.1em 0.4em;
   border-radius: 0.8em 0.3em;
-  -webkit-box-decoration-break: clone;
   box-decoration-break: clone;
   text-shadow: 0 0 0.75em var(--background-primary-alt);
 }
@@ -168,7 +167,6 @@ mark.hltr code {
 .highlightr-realistic .cm-s-obsidian span.cm-highlight,
 .highlightr-realistic .cm-s-obsidian span.hltr {
   padding: 0.15em 0.25em;
-  -webkit-box-decoration-break: clone;
   box-decoration-break: clone;
   text-shadow: 0 0 0.75em var(--background-primary-alt);
 }
@@ -177,7 +175,6 @@ mark.hltr code {
   margin: 0 0 0 -0.05em;
   padding: 0.15em 0.25em;
   border-radius: 0.8em 0 0 0.3em;
-  -webkit-box-decoration-break: clone;
   box-decoration-break: clone;
 }
 
@@ -188,11 +185,10 @@ mark.hltr code {
   margin: 0 -0.05em 0 0;
   padding: 0.15em 0.25em;
   border-radius: 0 0.3em 0.8em 0;
-  -webkit-box-decoration-break: clone;
   box-decoration-break: clone;
 }
 
-/**/
+/*  */
 
 button.copy-highlights {
   padding: 4px 14px;
@@ -206,7 +202,7 @@ button.copy-highlights {
   display: flex;
 }
 
-details summary.highlight-summary:before {
+details summary.highlight-summary::before {
   width: 2em;
   height: 2em;
   content: "☐";
@@ -215,59 +211,61 @@ details summary.highlight-summary:before {
   margin-right: 5px;
   display: inline-block;
   vertical-align: 0.05em;
-  background-color: currentColor;
-  -webkit-mask-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><path fill="black" d="M10.707 17.707L16.414 12l-5.707-5.707l-1.414 1.414L13.586 12l-4.293 4.293z"></path></svg>');
+  background-color: currentcolor;
+  mask-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><path fill="black" d="M10.707 17.707L16.414 12l-5.707-5.707l-1.414 1.414L13.586 12l-4.293 4.293z"></path></svg>');
 }
 
 details[open] summary.highlight-summary::before {
   transform: rotate(90deg);
 }
 
-/*highlightr component*/
+/* highlightr component */
 
 @keyframes fade {
   0% {
     opacity: 0;
   }
+
   20% {
     opacity: 0.9;
   }
+
   40% {
     opacity: 0.95;
   }
+
   100% {
     opacity: 1;
   }
 }
 
-.menu.highlighterContainer {
+.menu.highlighter-container {
   min-width: 140px;
   max-width: 225px;
   max-height: 180px;
-  padding-left: 0em;
+  padding-left: 0;
   padding: 0;
   margin: 0 auto;
   border-radius: 6px;
   font-size: 14px;
-  overflow-y: auto;
-  overflow-x: hidden;
+  overflow: hidden auto;
   position: fixed;
   animation: fade 300ms ease-in-out;
   background-color: var(--background-primary);
-  box-shadow: 0px 3px 25px rgba(31, 38, 135, 0.1);
+  box-shadow: 0 3px 25px rgb(31 38 135 / 10%);
   border: 1px solid var(--background-modifier-border);
 }
 
-.menu.highlighterContainer .menu-item .menu-item-icon {
+.menu.highlighter-container .menu-item .menu-item-icon {
   display: inline-block;
   width: 25px;
   position: relative;
   top: 2px;
 }
 
-.menu.highlighterContainer .menu-item {
+.menu.highlighter-container .menu-item {
   display: flex;
-  padding: 2px 14px 3px 14px;
+  padding: 2px 14px 3px;
   align-items: unset;
   margin: auto;
   cursor: pointer;
@@ -279,15 +277,15 @@ details[open] summary.highlight-summary::before {
   border-bottom: 1px solid var(--background-modifier-border);
 }
 
-.menu.highlighterContainer .menu-item:last-of-type {
+.menu.highlighter-container .menu-item:last-of-type {
   border-bottom: none;
 }
 
-/*----------------------------------------------------------------
+/* ----------------------------------------------------------------
 SETTINGS TAB
-----------------------------------------------------------------*/
+---------------------------------------------------------------- */
 
-button.HighlightrSettingsButton {
+button.highlightr-settings-button {
   padding: 4px 14px;
   border-radius: 6px;
   height: fit-content;
@@ -295,7 +293,7 @@ button.HighlightrSettingsButton {
   white-space: nowrap;
 }
 
-button.HighlightrSettingsButton svg {
+button.highlightr-settings-button svg {
   width: 1.3em;
   height: 1.3em;
   display: flex;
@@ -320,7 +318,8 @@ button.HighlightrSettingsButton svg {
   gap: 6px;
   flex-wrap: wrap;
 }
-/**/
+
+/*  */
 .highlighter-setting-icon {
   display: flex;
   align-items: center;
@@ -354,7 +353,7 @@ button.HighlightrSettingsButton svg {
   flex-shrink: 0;
 }
 
-.HighlightrSettingsTabsContainer {
+.highlightr-settings-tabs-container {
   padding-top: 12px;
   border-bottom: 1px solid var(--background-modifier-border);
   padding-bottom: 12px;
@@ -385,7 +384,7 @@ button.HighlightrSettingsButton svg {
 
 .highlighter-sortable-fallback {
   cursor: grabbing;
-  box-shadow: 0px 3px 32px rgb(31 38 135 / 15%);
+  box-shadow: 0 3px 32px rgb(31 38 135 / 15%);
 }
 
 .highlighter-sortable-grab {
@@ -405,7 +404,7 @@ button.HighlightrSettingsButton svg {
 
 .highlighter-sortable-drag {
   cursor: grabbing;
-  box-shadow: 0px 3px 32px rgb(31 38 135 / 15%);
+  box-shadow: 0 3px 32px rgb(31 38 135 / 15%);
 }
 
 
@@ -444,27 +443,29 @@ button.HighlightrSettingsButton svg {
   display: block;
 }
 
-/*----------------------------------------------------------------
+/* ----------------------------------------------------------------
 PICKR 1.8.2 MIT | https://github.com/Simonwep/pickr
-----------------------------------------------------------------*/
+---------------------------------------------------------------- */
 .pickr {
   position: relative;
   overflow: visible;
   transform: translateY(0);
 }
+
 .pickr * {
   box-sizing: border-box;
   outline: none;
   border: none;
-  -webkit-appearance: none;
+  appearance: none;
 }
+
 .pickr .pcr-button {
   position: relative;
   height: 2em;
   width: 2em;
   padding: 0.5em;
   cursor: pointer;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto",
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
     "Helvetica Neue", Arial, sans-serif;
   border-radius: 50%;
   background: url('data:image/svg+xml;utf8, <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 50 50" stroke="%2342445A" stroke-width="5px" stroke-linecap="round"><path d="M45,45L5,5"></path><path d="M45,5L5,45"></path></svg>')
@@ -472,6 +473,7 @@ PICKR 1.8.2 MIT | https://github.com/Simonwep/pickr
   background-size: 0;
   transition: all 0.3s;
 }
+
 .pickr .pcr-button::before {
   position: absolute;
   content: "";
@@ -484,9 +486,11 @@ PICKR 1.8.2 MIT | https://github.com/Simonwep/pickr
   border-radius: 50%;
   z-index: -1;
 }
+
 .pickr .pcr-button::before {
   z-index: initial;
 }
+
 .pickr .pcr-button::after {
   position: absolute;
   content: "";
@@ -499,25 +503,31 @@ PICKR 1.8.2 MIT | https://github.com/Simonwep/pickr
   background: var(--pcr-color);
   z-index: 1;
 }
+
 .pickr .pcr-button.clear {
   background-size: 70%;
 }
+
 .pickr .pcr-button.clear::before {
   opacity: 0;
 }
+
 .pickr .pcr-button.clear:focus {
-  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.85), 0 0 0 3px var(--pcr-color);
+  box-shadow: 0 0 0 1px rgb(255 255 255 / 85%), 0 0 0 3px var(--pcr-color);
 }
+
 .pickr .pcr-button.disabled {
   cursor: not-allowed;
 }
+
 .pickr *,
 .pcr-app * {
   box-sizing: border-box;
   outline: none;
   border: none;
-  -webkit-appearance: none;
+  appearance: none;
 }
+
 .pickr input:focus,
 .pickr input.pcr-active,
 .pickr button:focus,
@@ -526,20 +536,23 @@ PICKR 1.8.2 MIT | https://github.com/Simonwep/pickr
 .pcr-app input.pcr-active,
 .pcr-app button:focus,
 .pcr-app button.pcr-active {
-  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.85), 0 0 0 3px var(--pcr-color);
+  box-shadow: 0 0 0 1px rgb(255 255 255 / 85%), 0 0 0 3px var(--pcr-color);
 }
+
 .pickr .pcr-palette,
 .pickr .pcr-slider,
 .pcr-app .pcr-palette,
 .pcr-app .pcr-slider {
   transition: box-shadow 0.3s;
 }
+
 .pickr .pcr-palette:focus,
 .pickr .pcr-slider:focus,
 .pcr-app .pcr-palette:focus,
 .pcr-app .pcr-slider:focus {
-  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.85), 0 0 0 3px rgba(0, 0, 0, 0.25);
+  box-shadow: 0 0 0 1px rgb(255 255 255 / 85%), 0 0 0 3px rgb(0 0 0 / 25%);
 }
+
 .pcr-app {
   position: fixed;
   display: flex;
@@ -550,25 +563,29 @@ PICKR 1.8.2 MIT | https://github.com/Simonwep/pickr
   opacity: 0;
   visibility: hidden;
   transition: opacity 0.3s, visibility 0s 0.3s;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto",
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
     "Helvetica Neue", Arial, sans-serif;
-  box-shadow: 0 0.15em 1.5em 0 rgba(0, 0, 0, 0.1), 0 0 1em 0 rgba(0, 0, 0, 0.03);
+  box-shadow: 0 0.15em 1.5em 0 rgb(0 0 0 / 10%), 0 0 1em 0 rgb(0 0 0 / 3%);
   left: 0;
   top: 0;
 }
+
 .pcr-app.visible {
   transition: opacity 0.3s;
   visibility: visible;
   opacity: 1;
 }
+
 .pcr-app .pcr-swatches {
   display: flex;
   flex-wrap: wrap;
   margin-top: 0.75em;
 }
+
 .pcr-app .pcr-swatches.pcr-last {
   margin: 0;
 }
+
 @supports (display: grid) {
   .pcr-app .pcr-swatches {
     display: grid;
@@ -576,6 +593,7 @@ PICKR 1.8.2 MIT | https://github.com/Simonwep/pickr
     grid-template-columns: repeat(auto-fit, 1.75em);
   }
 }
+
 .pcr-app .pcr-swatches > button {
   font-size: 1em;
   position: relative;
@@ -591,6 +609,7 @@ PICKR 1.8.2 MIT | https://github.com/Simonwep/pickr
   background: transparent;
   z-index: 1;
 }
+
 .pcr-app .pcr-swatches > button::before {
   position: absolute;
   content: "";
@@ -603,6 +622,7 @@ PICKR 1.8.2 MIT | https://github.com/Simonwep/pickr
   border-radius: 0.15em;
   z-index: -1;
 }
+
 .pcr-app .pcr-swatches > button::after {
   content: "";
   position: absolute;
@@ -611,25 +631,30 @@ PICKR 1.8.2 MIT | https://github.com/Simonwep/pickr
   width: 100%;
   height: 100%;
   background: var(--pcr-color);
-  border: 1px solid rgba(0, 0, 0, 0.05);
+  border: 1px solid rgb(0 0 0 / 5%);
   border-radius: 0.15em;
   box-sizing: border-box;
 }
+
 .pcr-app .pcr-swatches > button:hover {
   filter: brightness(1.05);
 }
+
 .pcr-app .pcr-swatches > button:not(.pcr-active) {
   box-shadow: none;
 }
+
 .pcr-app .pcr-interaction {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  margin: 0 -0.2em 0 -0.2em;
+  margin: 0 -0.2em;
 }
+
 .pcr-app .pcr-interaction > * {
   margin: 0 0.2em;
 }
+
 .pcr-app .pcr-interaction input {
   letter-spacing: 0.07em;
   font-size: 0.75em;
@@ -642,13 +667,16 @@ PICKR 1.8.2 MIT | https://github.com/Simonwep/pickr
   padding: 0.45em 0.5em;
   margin-top: 0.75em;
 }
+
 .pcr-app .pcr-interaction input:hover {
   filter: brightness(0.975);
 }
+
 .pcr-app .pcr-interaction input:focus {
-  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.85),
-    0 0 0 3px rgba(66, 133, 244, 0.75);
+  box-shadow: 0 0 0 1px rgb(255 255 255 / 85%),
+    0 0 0 3px rgb(66 133 244 / 75%);
 }
+
 .pcr-app .pcr-interaction .pcr-result {
   color: #75797e;
   text-align: left;
@@ -659,18 +687,22 @@ PICKR 1.8.2 MIT | https://github.com/Simonwep/pickr
   background: #f1f3f4;
   cursor: text;
 }
-.pcr-app .pcr-interaction .pcr-result::-moz-selection {
-  background: #4285f4;
-  color: #fff;
-}
+
 .pcr-app .pcr-interaction .pcr-result::selection {
   background: #4285f4;
   color: #fff;
 }
+
+.pcr-app .pcr-interaction .pcr-result::selection {
+  background: #4285f4;
+  color: #fff;
+}
+
 .pcr-app .pcr-interaction .pcr-type.active {
   color: #fff;
   background: #4285f4;
 }
+
 .pcr-app .pcr-interaction .pcr-save,
 .pcr-app .pcr-interaction .pcr-cancel,
 .pcr-app .pcr-interaction .pcr-clear {
@@ -681,6 +713,7 @@ PICKR 1.8.2 MIT | https://github.com/Simonwep/pickr
   color: var(--text-on-accent) !important;
   background: var(--interactive-accent) !important;
 }
+
 .pcr-app .pcr-interaction .pcr-save:hover {
   background: var(--interactive-accent-hover) !important;
 }
@@ -690,6 +723,7 @@ PICKR 1.8.2 MIT | https://github.com/Simonwep/pickr
   color: var(--text-normal) !important;
   background: var(--interactive-normal) !important;
 }
+
 .pcr-app .pcr-interaction .pcr-clear:hover,
 .pcr-app .pcr-interaction .pcr-cancel:hover {
   background: var(--interactive-hover) !important;
@@ -700,50 +734,49 @@ PICKR 1.8.2 MIT | https://github.com/Simonwep/pickr
 .pcr-app .pcr-interaction .pcr-save:focus {
   box-shadow: 0 0 0 2px var(--background-modifier-border-focus);
 }
+
 .pcr-app .pcr-selection .pcr-picker {
   position: absolute;
   height: 18px;
   width: 18px;
   border: 2px solid #fff;
   border-radius: 100%;
-  -webkit-user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
   user-select: none;
 }
+
 .pcr-app .pcr-selection .pcr-color-palette,
 .pcr-app .pcr-selection .pcr-color-chooser,
 .pcr-app .pcr-selection .pcr-color-opacity {
   position: relative;
-  -webkit-user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
   user-select: none;
   display: flex;
   flex-direction: column;
   cursor: grab;
-  cursor: -webkit-grab;
 }
+
 .pcr-app .pcr-selection .pcr-color-palette:active,
 .pcr-app .pcr-selection .pcr-color-chooser:active,
 .pcr-app .pcr-selection .pcr-color-opacity:active {
   cursor: grabbing;
-  cursor: -webkit-grabbing;
 }
+
 .pcr-app[data-theme="nano"] {
   width: 14.25em;
   max-width: 95vw;
 }
+
 .pcr-app[data-theme="nano"] .pcr-swatches {
   margin-top: 0.6em;
   padding: 0 0.6em;
 }
+
 .pcr-app[data-theme="nano"] .pcr-interaction {
-  padding: 0 0.6em 0.6em 0.6em;
+  padding: 0 0.6em 0.6em;
 }
+
 .pcr-app[data-theme="nano"] .pcr-selection {
   display: grid;
-  grid-gap: 0.6em;
+  gap: 0.6em;
   grid-template-columns: 1fr 4fr;
   grid-template-rows: 5fr auto auto;
   align-items: center;
@@ -751,6 +784,7 @@ PICKR 1.8.2 MIT | https://github.com/Simonwep/pickr
   width: 100%;
   align-self: flex-start;
 }
+
 .pcr-app[data-theme="nano"] .pcr-selection .pcr-color-preview {
   grid-area: 2 / 1 / 4 / 1;
   height: 100%;
@@ -760,9 +794,11 @@ PICKR 1.8.2 MIT | https://github.com/Simonwep/pickr
   justify-content: center;
   margin-left: 0.6em;
 }
+
 .pcr-app[data-theme="nano"] .pcr-selection .pcr-color-preview .pcr-last-color {
   display: none;
 }
+
 .pcr-app[data-theme="nano"]
   .pcr-selection
   .pcr-color-preview
@@ -774,6 +810,7 @@ PICKR 1.8.2 MIT | https://github.com/Simonwep/pickr
   border-radius: 50em;
   overflow: hidden;
 }
+
 .pcr-app[data-theme="nano"]
   .pcr-selection
   .pcr-color-preview
@@ -789,17 +826,20 @@ PICKR 1.8.2 MIT | https://github.com/Simonwep/pickr
   border-radius: 0.15em;
   z-index: -1;
 }
+
 .pcr-app[data-theme="nano"] .pcr-selection .pcr-color-palette {
   grid-area: 1 / 1 / 2 / 3;
   width: 100%;
   height: 100%;
   z-index: 1;
 }
+
 .pcr-app[data-theme="nano"] .pcr-selection .pcr-color-palette .pcr-palette {
   border-radius: 0.15em;
   width: 100%;
   height: 100%;
 }
+
 .pcr-app[data-theme="nano"]
   .pcr-selection
   .pcr-color-palette
@@ -815,30 +855,37 @@ PICKR 1.8.2 MIT | https://github.com/Simonwep/pickr
   border-radius: 0.15em;
   z-index: -1;
 }
+
 .pcr-app[data-theme="nano"] .pcr-selection .pcr-color-chooser {
   grid-area: 2 / 2 / 2 / 2;
 }
+
 .pcr-app[data-theme="nano"] .pcr-selection .pcr-color-opacity {
   grid-area: 3 / 2 / 3 / 2;
 }
+
 .pcr-app[data-theme="nano"] .pcr-selection .pcr-color-chooser,
 .pcr-app[data-theme="nano"] .pcr-selection .pcr-color-opacity {
   height: 0.5em;
   margin: 0 0.6em;
 }
+
 .pcr-app[data-theme="nano"] .pcr-selection .pcr-color-chooser .pcr-picker,
 .pcr-app[data-theme="nano"] .pcr-selection .pcr-color-opacity .pcr-picker {
   top: 50%;
   transform: translateY(-50%);
 }
+
 .pcr-app[data-theme="nano"] .pcr-selection .pcr-color-chooser .pcr-slider,
 .pcr-app[data-theme="nano"] .pcr-selection .pcr-color-opacity .pcr-slider {
   flex-grow: 1;
   border-radius: 50em;
 }
+
 .pcr-app[data-theme="nano"] .pcr-selection .pcr-color-chooser .pcr-slider {
   background: linear-gradient(to right, red, #ff0, lime, cyan, blue, #f0f, red);
 }
+
 .pcr-app[data-theme="nano"] .pcr-selection .pcr-color-opacity .pcr-slider {
   background: linear-gradient(to right, transparent, black),
     url('data:image/svg+xml;utf8, <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2 2"><path fill="white" d="M1,0H2V1H1V0ZM0,1H1V2H0V1Z"/><path fill="gray" d="M0,0H1V1H0V0ZM1,1H2V2H1V1Z"/></svg>');
@@ -852,7 +899,7 @@ PICKR 1.8.2 MIT | https://github.com/Simonwep/pickr
   border: 1px solid var(--background-modifier-border);
   border-radius: 8px;
   padding: 4px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 4px 12px rgb(0 0 0 / 15%);
   gap: 4px;
   z-index: 1000;
   transition: opacity 0.15s ease, transform 0.15s ease;
@@ -884,29 +931,31 @@ PICKR 1.8.2 MIT | https://github.com/Simonwep/pickr
   height: 20px;
 }
 
-/*offset*/
+/* offset */
 .highlightr-offset mark,
 .highlightr-offset .markdown-preview-view mark {
   border-radius: 0;
-  padding: 0.125em 0.125em !important;
+  padding: 0.125em !important;
   margin: 0 !important;
-  -webkit-box-decoration-break: clone;
   box-decoration-break: clone;
+
   --offset-bg: var(--background-primary);
+
   background-image: 
-    linear-gradient(360deg, rgba(255, 255, 255, 0) 40%, var(--offset-bg) 40%),
+    linear-gradient(360deg, rgb(255 255 255 / 0%) 40%, var(--offset-bg) 40%),
     linear-gradient(to right, var(--offset-bg) 0.5em, transparent 0.5em) !important;
 }
 
 /* Live Preview offset: applied to the outer .hltr wrapper */
 .highlightr-offset .cm-s-obsidian span.hltr {
   border-radius: 0;
-  padding: 0.125em 0.125em !important;
-  -webkit-box-decoration-break: clone;
+  padding: 0.125em !important;
   box-decoration-break: clone;
+
   --offset-bg: var(--background-primary);
+
   background-image: 
-    linear-gradient(360deg, rgba(255, 255, 255, 0) 40%, var(--offset-bg) 40%),
+    linear-gradient(360deg, rgb(255 255 255 / 0%) 40%, var(--offset-bg) 40%),
     linear-gradient(to right, var(--offset-bg) 0.5em, transparent 0.5em) !important;
 }
 
@@ -917,7 +966,6 @@ PICKR 1.8.2 MIT | https://github.com/Simonwep/pickr
 
 .highlightr-offset .cm-s-obsidian span.cm-formatting-highlight {
   padding: 0.15em 0.3em;
-  -webkit-box-decoration-break: clone;
   box-decoration-break: clone;
 }
 
@@ -926,7 +974,6 @@ PICKR 1.8.2 MIT | https://github.com/Simonwep/pickr
   .cm-highlight
   + span.cm-formatting-highlight {
   padding: 0.15em 0.3em;
-  -webkit-box-decoration-break: clone;
   box-decoration-break: clone;
 }
 
@@ -950,6 +997,7 @@ PICKR 1.8.2 MIT | https://github.com/Simonwep/pickr
   flex-wrap: wrap;
   align-items: center;
 }
+
 .highlighter-settings-inputs {
   display: flex;
   gap: 6px;
@@ -957,24 +1005,29 @@ PICKR 1.8.2 MIT | https://github.com/Simonwep/pickr
   justify-content: space-between;
   width: 100%;
 }
+
 .highlighter-settings-left {
   display: flex;
   gap: 8px;
   align-items: center;
 }
+
 .highlighter-settings-right {
   display: flex;
   gap: 20px;
   align-items: center;
 }
+
 .highlighter-info-el {
   display: flex;
   align-items: center;
   flex: 1;
 }
+
 .highlighter-info-el.is-editing {
   gap: 8px;
 }
+
 .highlighter-info-group {
   display: flex;
   align-items: baseline;
@@ -982,15 +1035,15 @@ PICKR 1.8.2 MIT | https://github.com/Simonwep/pickr
   flex: 1;
   min-width: 0;
 }
+
 .highlighter-name-span {
-  flex-grow: 1;
-  flex-shrink: 1;
-  flex-basis: 200px;
+  flex: 1 1 200px;
   min-width: 0;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
+
 .highlighter-val-span {
   flex-shrink: 0;
   white-space: nowrap;
@@ -999,11 +1052,13 @@ PICKR 1.8.2 MIT | https://github.com/Simonwep/pickr
   color: var(--text-muted);
   font-size: 0.85em;
 }
+
 .highlighter-name-input {
   flex: 0 0 100px;
   width: 100px;
   min-width: 100px;
 }
+
 .highlighter-val-input {
   flex: 1;
   min-width: 80px;
@@ -1017,11 +1072,13 @@ PICKR 1.8.2 MIT | https://github.com/Simonwep/pickr
   position: absolute;
   z-index: 1000;
 }
+
 .highlightr-floating-toolbar.is-visible {
   display: flex;
 }
+
 .highlightr-floating-divider {
   width: 1px;
   background-color: var(--background-modifier-border);
-  margin: 2px 2px;
+  margin: 2px;
 }
