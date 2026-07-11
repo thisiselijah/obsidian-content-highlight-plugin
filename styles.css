@@ -11,13 +11,13 @@ span.hltr {
 
 /* All inner native spans must be transparent so the outer wrapper's
    background shows through as one continuous block. */
-span.hltr .cm-highlight {
+.cm-s-obsidian span.hltr .cm-highlight {
   background-color: transparent ;
   background-image: none ;
 }
 
-span.hltr .cm-inline-code,
-span.hltr.cm-inline-code {
+.cm-s-obsidian span.hltr .cm-inline-code,
+.cm-s-obsidian span.hltr.cm-inline-code {
   background-color: transparent ;
   background-image: none ;
   border: none ;
@@ -43,10 +43,10 @@ mark.hltr code {
 }
 
 /* lowlight */
-body .highlightr-lowlight mark,
-body .highlightr-lowlight span.cm-highlight,
-body .highlightr-lowlight span.hltr,
-body .highlightr-lowlight .markdown-preview-view mark {
+body.highlightr-lowlight mark,
+body.highlightr-lowlight span.cm-highlight,
+body.highlightr-lowlight span.hltr,
+body.highlightr-lowlight .markdown-preview-view mark {
   --lowlight-background: var(--background-primary);
 
   border-radius: 0;
@@ -59,35 +59,35 @@ body .highlightr-lowlight .markdown-preview-view mark {
   ) ;
 }
 
-body .highlightr-lowlight .workspace-split.mod-left-split mark,
-body .highlightr-lowlight .workspace-split.mod-left-split span.cm-highlight,
-body .highlightr-lowlight .workspace-split.mod-left-split span.hltr,
-body .highlightr-lowlight
+body.highlightr-lowlight .workspace-split.mod-left-split mark,
+body.highlightr-lowlight .workspace-split.mod-left-split span.cm-highlight,
+body.highlightr-lowlight .workspace-split.mod-left-split span.hltr,
+body.highlightr-lowlight
   .workspace-split.mod-left-split
   .markdown-preview-view
   mark,
-body .highlightr-lowlight .workspace-split.mod-right-split mark,
-body .highlightr-lowlight .workspace-split.mod-right-split span.cm-highlight,
-body .highlightr-lowlight .workspace-split.mod-right-split span.hltr,
-body .highlightr-lowlight
+body.highlightr-lowlight .workspace-split.mod-right-split mark,
+body.highlightr-lowlight .workspace-split.mod-right-split span.cm-highlight,
+body.highlightr-lowlight .workspace-split.mod-right-split span.hltr,
+body.highlightr-lowlight
   .workspace-split.mod-right-split
   .markdown-preview-view
   mark {
   --lowlight-background: var(--background-secondary);
 }
 
-body .highlightr-lowlight .admonition-content mark,
-body .highlightr-lowlight .admonition-content span.cm-highlight,
-body .highlightr-lowlight .admonition-content span.hltr,
-body .highlightr-lowlight .admonition-content > .markdown-preview-view mark {
+body.highlightr-lowlight .admonition-content mark,
+body.highlightr-lowlight .admonition-content span.cm-highlight,
+body.highlightr-lowlight .admonition-content span.hltr,
+body.highlightr-lowlight .admonition-content > .markdown-preview-view mark {
   --lowlight-background: var(--background-primary-alt);
 }
 
 /* floating */
-body .highlightr-floating mark,
-body .highlightr-floating span.cm-highlight,
-body .highlightr-floating span.hltr,
-body .highlightr-floating .markdown-preview-view mark {
+body.highlightr-floating mark,
+body.highlightr-floating span.cm-highlight,
+body.highlightr-floating span.hltr,
+body.highlightr-floating .markdown-preview-view mark {
   --floating-background: var(--background-primary);
 
   border-radius: 0;
@@ -101,33 +101,33 @@ body .highlightr-floating .markdown-preview-view mark {
   ) ;
 }
 
-body .highlightr-floating .workspace-split.mod-left-split mark,
-body .highlightr-floating .workspace-split.mod-left-split span.cm-highlight,
-body .highlightr-floating .workspace-split.mod-left-split span.hltr,
-body .highlightr-floating
+body.highlightr-floating .workspace-split.mod-left-split mark,
+body.highlightr-floating .workspace-split.mod-left-split span.cm-highlight,
+body.highlightr-floating .workspace-split.mod-left-split span.hltr,
+body.highlightr-floating
   .workspace-split.mod-left-split
   .markdown-preview-view
   mark,
-body .highlightr-floating .workspace-split.mod-right-split mark,
-body .highlightr-floating .workspace-split.mod-right-split span.cm-highlight,
-body .highlightr-floating .workspace-split.mod-right-split span.hltr,
-body .highlightr-floating
+body.highlightr-floating .workspace-split.mod-right-split mark,
+body.highlightr-floating .workspace-split.mod-right-split span.cm-highlight,
+body.highlightr-floating .workspace-split.mod-right-split span.hltr,
+body.highlightr-floating
   .workspace-split.mod-right-split
   .markdown-preview-view
   mark {
   --floating-background: var(--background-secondary);
 }
 
-body .highlightr-floating .admonition-content mark,
-body .highlightr-floating .admonition-content span.cm-highlight,
-body .highlightr-floating .admonition-content span.hltr,
-body .highlightr-floating .admonition-content > .markdown-preview-view mark {
+body.highlightr-floating .admonition-content mark,
+body.highlightr-floating .admonition-content span.cm-highlight,
+body.highlightr-floating .admonition-content span.hltr,
+body.highlightr-floating .admonition-content > .markdown-preview-view mark {
   --floating-background: var(--background-primary-alt);
 }
 
 /* rounded */
-body .highlightr-rounded mark,
-body .highlightr-rounded .markdown-preview-view mark {
+body.highlightr-rounded mark,
+body.highlightr-rounded .markdown-preview-view mark {
   margin: 0 -0.05em;
   padding: 0.125em 0.15em;
   border-radius: 0.2em;
@@ -136,20 +136,20 @@ body .highlightr-rounded .markdown-preview-view mark {
   
 }
 
-body .highlightr-rounded span.cm-highlight,
-body .highlightr-rounded span.hltr {
+body.highlightr-rounded span.cm-highlight,
+body.highlightr-rounded span.hltr {
   border-radius: 0.2em;
   -webkit-box-decoration-break: clone;
   box-decoration-break: clone;
   
 }
 
-body .highlightr-rounded .cm-s-obsidian span.cm-highlight,
-body .highlightr-rounded .cm-s-obsidian span.hltr {
+body.highlightr-rounded .cm-s-obsidian span.cm-highlight,
+body.highlightr-rounded .cm-s-obsidian span.hltr {
   font-weight: inherit;
 }
 
-body .highlightr-rounded .cm-highlight + span.cm-formatting-highlight {
+body.highlightr-rounded .cm-highlight + span.cm-formatting-highlight {
   padding-left: 0;
   padding-right: 0.15em;
   -webkit-box-decoration-break: clone;
@@ -158,8 +158,8 @@ body .highlightr-rounded .cm-highlight + span.cm-formatting-highlight {
 }
 
 /* realistic */
-body .highlightr-realistic mark,
-body .highlightr-realistic .markdown-preview-view mark {
+body.highlightr-realistic mark,
+body.highlightr-realistic .markdown-preview-view mark {
   margin: 0 -0.05em;
   padding: 0.1em 0.4em;
   border-radius: 0.8em 0.3em;
@@ -176,8 +176,8 @@ body .highlightr-realistic .markdown-preview-view mark {
   border-radius: 0.8em 0.3em;
 }
 
-body .highlightr-realistic .cm-s-obsidian span.cm-highlight,
-body .highlightr-realistic .cm-s-obsidian span.hltr {
+body.highlightr-realistic .cm-s-obsidian span.cm-highlight,
+body.highlightr-realistic .cm-s-obsidian span.hltr {
   padding: 0.15em 0.25em;
   -webkit-box-decoration-break: clone;
   box-decoration-break: clone;
@@ -185,7 +185,7 @@ body .highlightr-realistic .cm-s-obsidian span.hltr {
   text-shadow: 0 0 0.75em var(--background-primary-alt);
 }
 
-body .highlightr-realistic .cm-s-obsidian span.cm-formatting-highlight {
+body.highlightr-realistic .cm-s-obsidian span.cm-formatting-highlight {
   margin: 0 0 0 -0.05em;
   padding: 0.15em 0.25em;
   border-radius: 0.8em 0 0 0.3em;
@@ -194,7 +194,7 @@ body .highlightr-realistic .cm-s-obsidian span.cm-formatting-highlight {
   
 }
 
-body .highlightr-realistic
+body.highlightr-realistic
   .cm-s-obsidian
   .cm-highlight
   + span.cm-formatting-highlight {
@@ -951,8 +951,8 @@ PICKR 1.8.2 MIT | https://github.com/Simonwep/pickr
 }
 
 /* offset */
-body .highlightr-offset mark,
-body .highlightr-offset .markdown-preview-view mark {
+body.highlightr-offset mark,
+body.highlightr-offset .markdown-preview-view mark {
   border-radius: 0;
   padding: 0.125em ;
   margin: 0 ;
@@ -968,7 +968,7 @@ body .highlightr-offset .markdown-preview-view mark {
 }
 
 /* Live Preview offset: applied to the outer .hltr wrapper */
-body .highlightr-offset .cm-s-obsidian span.hltr {
+body.highlightr-offset .cm-s-obsidian span.hltr {
   border-radius: 0;
   padding: 0.125em ;
   -webkit-box-decoration-break: clone;
@@ -987,14 +987,14 @@ body .highlightr-offset .cm-s-obsidian span.hltr {
   border-radius: 0;
 }
 
-body .highlightr-offset .cm-s-obsidian span.cm-formatting-highlight {
+body.highlightr-offset .cm-s-obsidian span.cm-formatting-highlight {
   padding: 0.15em 0.3em;
   -webkit-box-decoration-break: clone;
   box-decoration-break: clone;
   
 }
 
-body .highlightr-offset
+body.highlightr-offset
   .cm-s-obsidian
   .cm-highlight
   + span.cm-formatting-highlight {
@@ -1004,14 +1004,14 @@ body .highlightr-offset
   
 }
 
-body .highlightr-offset .workspace-split.mod-left-split mark,
-body .highlightr-offset .workspace-split.mod-left-split span.hltr,
-body .highlightr-offset .workspace-split.mod-left-split span.cm-highlight,
-body .highlightr-offset .workspace-split.mod-left-split .markdown-preview-view mark,
-body .highlightr-offset .workspace-split.mod-right-split mark,
-body .highlightr-offset .workspace-split.mod-right-split span.hltr,
-body .highlightr-offset .workspace-split.mod-right-split span.cm-highlight,
-body .highlightr-offset .workspace-split.mod-right-split .markdown-preview-view mark {
+body.highlightr-offset .workspace-split.mod-left-split mark,
+body.highlightr-offset .workspace-split.mod-left-split span.hltr,
+body.highlightr-offset .workspace-split.mod-left-split span.cm-highlight,
+body.highlightr-offset .workspace-split.mod-left-split .markdown-preview-view mark,
+body.highlightr-offset .workspace-split.mod-right-split mark,
+body.highlightr-offset .workspace-split.mod-right-split span.hltr,
+body.highlightr-offset .workspace-split.mod-right-split span.cm-highlight,
+body.highlightr-offset .workspace-split.mod-right-split .markdown-preview-view mark {
   --offset-bg: var(--background-secondary);
 }
 
