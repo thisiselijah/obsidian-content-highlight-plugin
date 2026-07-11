@@ -347,11 +347,10 @@ export default class HighlightrPlugin extends Plugin {
             }
           }
 
-          const newAnchor = (selection.anchor === from) ? { line: from.line, ch: newFromCh } : { line: to.line, ch: newToCh };
           const newHead = (selection.head === from) ? { line: from.line, ch: newFromCh } : { line: to.line, ch: newToCh };
 
           newSelections.push({
-            from: newAnchor,
+            from: newHead,
             to: newHead
           });
         }
