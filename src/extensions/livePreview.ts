@@ -77,7 +77,7 @@ export const highlightrLivePreviewPlugin = (settings: HighlightrSettings) => {
                     return view.plugin(plugin)?.outerDecorations ?? Decoration.none;
                 });
             }
-            return [] as unknown as Extension;
+            return [];
         }
     });
 

@@ -1,3 +1,4 @@
+/* stylelint-disable declaration-no-important, plugin/no-unsupported-browser-features */
 mark.hltr {
   padding: 0.125em 0.15em !important;
   margin: 0 -0.15em !important;
@@ -1081,4 +1082,48 @@ PICKR 1.8.2 MIT | https://github.com/Simonwep/pickr
   width: 1px;
   background-color: var(--background-modifier-border);
   margin: 2px;
+}
+
+/* Style Demo Component Classes */
+.hltr-style-demo-lowlight {
+  background: #FFB7EACC;
+  padding: .125em .125em;
+  --lowlight-background: var(--background-primary);
+  border-radius: 0;
+  background-image: linear-gradient(360deg,rgba(255, 255, 255, 0) 40%,var(--lowlight-background) 40%) !important;
+}
+
+.hltr-style-demo-floating {
+  background: #FFB7EACC;
+  --floating-background: var(--background-primary);
+  border-radius: 0;
+  padding-bottom: 5px;
+  background-image: linear-gradient(360deg,rgba(255, 255, 255, 0) 28%,var(--floating-background) 28%) !important;
+}
+
+.hltr-style-demo-realistic {
+  background: #FFB7EACC;
+  padding: 0.1em 0.4em;
+  border-radius: 0.8em 0.3em;
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
+  text-shadow: 0 0 0.75em var(--background-primary-alt);
+}
+
+.hltr-style-demo-rounded {
+  background: #FFB7EACC;
+  padding: 0.125em 0.15em;
+  border-radius: 0.2em;
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
+}
+
+.hltr-style-demo-offset {
+  background: #FFB7EACC;
+  padding: 0.125em 0.125em;
+  border-radius: 0;
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
+  --offset-bg: var(--background-primary);
+  background-image: linear-gradient(360deg, rgba(255, 255, 255, 0) 40%, var(--offset-bg) 40%), linear-gradient(to right, var(--offset-bg) 0.5em, transparent 0.5em) !important;
 }

@@ -69,11 +69,11 @@ export class HighlightrSettingTab extends PluginSettingTab {
 
     const styleDemo = () => {
       const d = createEl("p", { cls: "highlighter-style-demo" });
-      d.createEl("span", { text: "Lowlight" }).setCssStyles({ "background": "#FFB7EACC", "padding": ".125em .125em", "--lowlight-background": "var(--background-primary)", "border-radius": "0", "background-image": "linear-gradient(360deg,rgba(255, 255, 255, 0) 40%,var(--lowlight-background) 40%) !important" });
-      d.createEl("span", { text: "Floating" }).setCssStyles({ "background": "#FFB7EACC", "--floating-background": "var(--background-primary)", "border-radius": "0", "padding-bottom": "5px", "background-image": "linear-gradient(360deg,rgba(255, 255, 255, 0) 28%,var(--floating-background) 28%) !important" });
-      d.createEl("span", { text: "Realistic" }).setCssStyles({ "background": "#FFB7EACC", "padding": "0.1em 0.4em", "border-radius": "0.8em 0.3em", "-webkit-box-decoration-break": "clone", "box-decoration-break": "clone", "text-shadow": "0 0 0.75em var(--background-primary-alt)" });
-      d.createEl("span", { text: "Rounded" }).setCssStyles({ "background": "#FFB7EACC", "padding": "0.125em 0.15em", "border-radius": "0.2em", "-webkit-box-decoration-break": "clone", "box-decoration-break": "clone" });
-      d.createEl("span", { text: "Offset" }).setCssStyles({ "background": "#FFB7EACC", "padding": "0.125em 0.125em", "border-radius": "0", "-webkit-box-decoration-break": "clone", "box-decoration-break": "clone", "--offset-bg": "var(--background-primary)", "background-image": "linear-gradient(360deg, rgba(255, 255, 255, 0) 40%, var(--offset-bg) 40%), linear-gradient(to right, var(--offset-bg) 0.5em, transparent 0.5em) !important" });
+      d.createEl("span", { text: "Lowlight", cls: "hltr-style-demo-lowlight" });
+      d.createEl("span", { text: "Floating", cls: "hltr-style-demo-floating" });
+      d.createEl("span", { text: "Realistic", cls: "hltr-style-demo-realistic" });
+      d.createEl("span", { text: "Rounded", cls: "hltr-style-demo-rounded" });
+      d.createEl("span", { text: "Offset", cls: "hltr-style-demo-offset" });
       return d;
     };
 
@@ -232,7 +232,7 @@ export class HighlightrSettingTab extends PluginSettingTab {
             }
 
             if (color && value) {
-              if (!this.plugin.settings.highlighterOrder.includes(color)) {
+              if (this.plugin.settings.highlighterOrder.indexOf(color) === -1) {
                 this.plugin.settings.highlighterOrder.push(color);
                 this.plugin.settings.highlighters[color] = value;
                 window.setTimeout(() => {
@@ -346,7 +346,7 @@ export class HighlightrSettingTab extends PluginSettingTab {
 
               if (newName && newVal) {
                 if (newName !== highlighter) {
-                  if (this.plugin.settings.highlighterOrder.includes(newName)) {
+                  if (this.plugin.settings.highlighterOrder.indexOf(newName) !== -1) {
                     new Notice("This color name already exists");
                     return;
                   }
