@@ -41,7 +41,7 @@ export const highlightrLivePreviewPlugin = (settings: HighlightrSettings) => {
                     const color = settings.highlighters[colorKey];
                     if (!color) continue;
 
-                    const hasFocus = selection.from <= end && selection.to >= start;
+                    const hasFocus = selection.from < end && selection.to > start;
                     const className = `hltr hltr-${colorKey.toLowerCase().replace(/ /g, '-')}`;
                     const styleAttr = `background-color: ${color} !important; --hltr-color: ${color};`;
 
