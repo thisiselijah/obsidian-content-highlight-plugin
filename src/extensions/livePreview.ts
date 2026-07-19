@@ -43,7 +43,7 @@ export const highlightrLivePreviewPlugin = (settings: HighlightrSettings) => {
 
                     const hasFocus = selection.from < end && selection.to > start;
                     const className = `hltr hltr-${colorKey.toLowerCase().replace(/ /g, '-')}`;
-                    const styleAttr = `background-color: ${color} !important; --hltr-color: ${color};`;
+                    const styleAttr = `--hltr-color: ${color};`;
 
                     // outerDecorations: a single, unsplit wrapper for the visible content.
                     // This wraps AROUND all native CM6 decorations (cm-highlight, cm-inline-code, etc.)

@@ -175,7 +175,6 @@ export default class HighlightrPlugin extends Plugin {
             if (color) {
               mark.addClass(`hltr-${colorKey.toLowerCase().replace(/ /g, '-')}`);
               mark.addClass("hltr");
-              mark.style.setProperty("background-color", color, "important");
               mark.style.setProperty("--hltr-color", color);
               // Remove the {color} part from text
               nextNode.textContent = nextNode.textContent!.substring(match[0].length);
@@ -428,10 +427,6 @@ export default class HighlightrPlugin extends Plugin {
     activeDocument.body.classList.toggle(
       "highlightr-realistic",
       this.settings.highlighterStyle === "realistic"
-    );
-    activeDocument.body.classList.toggle(
-      "highlightr-offset",
-      this.settings.highlighterStyle === "offset"
     );
   };
 

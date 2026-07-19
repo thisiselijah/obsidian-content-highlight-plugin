@@ -73,7 +73,6 @@ export class HighlightrSettingTab extends PluginSettingTab {
       d.createEl("span", { text: "Floating", cls: "hltr-style-demo-floating" });
       d.createEl("span", { text: "Realistic", cls: "hltr-style-demo-realistic" });
       d.createEl("span", { text: "Rounded", cls: "hltr-style-demo-rounded" });
-      d.createEl("span", { text: "Offset", cls: "hltr-style-demo-offset" });
       return d;
     };
 

@@ -4,7 +4,6 @@ export const HIGHLIGHTER_STYLES = [
   "floating",
   "rounded",
   "realistic",
-  "offset",
 ];
 
 export interface Highlighters {
