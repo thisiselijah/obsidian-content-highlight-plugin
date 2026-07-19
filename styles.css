@@ -23,23 +23,32 @@ span.hltr {
   border: none ;
   border-radius: 0 ;
   box-shadow: none ;
-  padding: 0 ;
+  padding: 0 !important ;
   margin: 0 ;
-  vertical-align: baseline ;
-  line-height: inherit ;
+  display: inline ;
+  vertical-align: baseline !important ;
+  line-height: 1 !important ;
+}
+
+/* Fix bottom-edge misalignment when highlight starts with inline code (Live Preview) */
+.cm-s-obsidian span.hltr .cm-formatting-code {
+  display: inline ;
+  vertical-align: baseline !important ;
+  line-height: 1 !important ;
 }
 
 /* Reading mode: code inside mark */
 mark.hltr code {
   background-color: transparent ;
-  padding: 0 ;
+  padding: 0 !important ;
   margin: 0 ;
   border: none ;
   border-radius: 0 ;
   box-shadow: none ;
-  vertical-align: baseline ;
-  font-size: inherit ;
-  line-height: inherit ;
+  display: inline !important ;
+  vertical-align: baseline !important ;
+  font-size: inherit !important ;
+  line-height: 1 !important ;
 }
 
 /* lowlight */
