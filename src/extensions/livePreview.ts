@@ -1,6 +1,7 @@
 import { RangeSetBuilder, Extension } from "@codemirror/state";
 import { Decoration, DecorationSet, EditorView, ViewPlugin, ViewUpdate } from "@codemirror/view";
 import { HighlightrSettings } from "src/settings/settingsData";
+import { coloredHighlightRegex } from "src/annotations/syntax";
 
 export const highlightrLivePreviewPlugin = (settings: HighlightrSettings) => {
     const plugin = ViewPlugin.fromClass(class {
@@ -28,7 +29,7 @@ export const highlightrLivePreviewPlugin = (settings: HighlightrSettings) => {
 
             for (let { from, to } of view.visibleRanges) {
                 const text = view.state.doc.sliceString(from, to);
-                const regex = /==((?:(?!==).)*?)==\{([a-zA-Z0-9_\-\s]+)\}/g;
+                const regex = coloredHighlightRegex();
                 let match;
                 
                 while ((match = regex.exec(text)) !== null) {
@@ -37,6 +38,7 @@ export const highlightrLivePreviewPlugin = (settings: HighlightrSettings) => {
                     const innerStart = start + 2;
                     const innerEnd = start + 2 + match[1].length;
                     const colorKey = match[2];
+                    const note = match[3]?.trim();
 
                     const color = settings.highlighters[colorKey];
                     if (!color) continue;
@@ -48,9 +50,16 @@ export const highlightrLivePreviewPlugin = (settings: HighlightrSettings) => {
                     // outerDecorations: a single, unsplit wrapper for the visible content.
                     // This wraps AROUND all native CM6 decorations (cm-highlight, cm-inline-code, etc.)
                     // so the background is one continuous block with no gaps.
+                    // data-hltr-* lets the annotation overlay find this highlight and
+                    // group its fragments if CM splits the mark across spans.
+                    const attributes: Record<string, string> = { style: styleAttr };
+                    if (note) {
+                        attributes["data-hltr-note"] = note;
+                        attributes["data-hltr-id"] = `${start}`;
+                    }
                     outerBuilder.add(innerStart, innerEnd, Decoration.mark({
                         class: className,
-                        attributes: { style: styleAttr }
+                        attributes
                     }));
 
                     if (hasFocus) {

@@ -9,7 +9,8 @@ import {
 } from "obsidian";
 import Pickr from "@simonwep/pickr";
 import Sortable from "sortablejs";
-import { HIGHLIGHTER_STYLES } from "./settingsData";
+import { ArrowDirection, HIGHLIGHTER_STYLES } from "./settingsData";
+import { ANNOTATIONS_CHANGED_EVENT } from "src/annotations/overlay";
 import { setAttributes } from "src/utils/setAttributes";
 
 export class HighlightrSettingTab extends PluginSettingTab {
@@ -91,6 +92,40 @@ export class HighlightrSettingTab extends PluginSettingTab {
           .onChange(async (val) => {
             this.plugin.settings.colorChangeMode = val as "entire" | "subsegment";
             await this.plugin.saveSettings();
+          });
+      });
+
+    new Setting(containerEl)
+      .setName("Annotation arrow direction")
+      .setDesc("Choose which end of an annotation's connector gets an arrowhead.")
+      .addDropdown((dropdown) => {
+        dropdown.addOptions({
+          "to-highlight": "Note → highlight",
+          "to-note": "Highlight → note",
+          "both": "Both ends",
+          "none": "No arrowhead (line only)"
+        });
+        dropdown
+          .setValue(this.plugin.settings.arrowDirection)
+          .onChange(async (val) => {
+            this.plugin.settings.arrowDirection = val as ArrowDirection;
+            await this.plugin.saveSettings();
+            dispatchEvent(new Event(ANNOTATIONS_CHANGED_EVENT));
+          });
+      });
+
+    new Setting(containerEl)
+      .setName("Annotation randomness")
+      .setDesc("How much annotations vary, so they look hand-placed: distance and side of each note, curve of each arrow, arrowhead size, stroke, and a slight tilt. Each annotation keeps the same look every time it's drawn. 0% makes them uniform.")
+      .addSlider((slider) => {
+        slider
+          .setLimits(0, 100, 5)
+          .setValue(Math.round(this.plugin.settings.annotationRandomness * 100))
+          .setDynamicTooltip()
+          .onChange(async (val) => {
+            this.plugin.settings.annotationRandomness = val / 100;
+            await this.plugin.saveSettings();
+            dispatchEvent(new Event(ANNOTATIONS_CHANGED_EVENT));
           });
       });
 

@@ -24,6 +24,15 @@ export default function contextMenu(
       });
   });
 
+  if (plugin.findAnnotatableHighlight(editor)) {
+    menu.addItem((item) => {
+      item
+        .setTitle("Annotate highlight")
+        .setIcon("highlightr-annotate")
+        .onClick(() => plugin.annotateHighlight(editor));
+    });
+  }
+
   if (selection) {
     menu.addItem((item) => {
       item

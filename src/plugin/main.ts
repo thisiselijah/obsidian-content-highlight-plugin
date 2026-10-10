@@ -1,4 +1,4 @@
-import { Editor, Menu, Plugin, PluginManifest } from "obsidian";
+import { Editor, Menu, Notice, Plugin, PluginManifest } from "obsidian";
 import { wait } from "src/utils/util";
 import addIcons from "src/icons/customIcons";
 import { HighlightrSettingTab } from "../settings/settingsTab";
@@ -12,6 +12,16 @@ import { EnhancedApp, EnhancedEditor } from "src/settings/types";
 import { FloatingMenu } from "src/ui/floatingMenu";
 
 import { highlightrLivePreviewPlugin } from "src/extensions/livePreview";
+import { annotationLivePreviewPlugin } from "src/annotations/livePreviewAnnotations";
+import { ReadingAnnotations } from "src/annotations/readingAnnotations";
+import { AnnotationModal } from "src/annotations/annotationModal";
+import {
+  COLOR_SUFFIX_SOURCE,
+  buildColorSuffix,
+  colorSuffixAtStartRegex,
+  findColoredHighlightAt,
+  sanitizeNote,
+} from "src/annotations/syntax";
 
 function applyColorToLine(
   lineText: string,
@@ -20,35 +30,40 @@ function applyColorToLine(
   newColor: string | undefined,
   colorChangeMode: "entire" | "subsegment"
 ): { newLineText: string; handled: boolean; newC1: number; newC2: number } {
-  interface Token { type: "text" | "highlight"; text: string; color?: string; start: number; end: number; }
+  interface Token { type: "text" | "highlight"; text: string; color?: string; note?: string; start: number; end: number; }
   const tokens: Token[] = [];
-  const regex = /==((?:(?!==).)*?)==(?:\{([a-zA-Z0-9_\-\s]+)\})?/g;
+  const regex = new RegExp(String.raw`==((?:(?!==).)*?)==(?:` + COLOR_SUFFIX_SOURCE + ")?", "g");
   let lastIndex = 0;
   let match;
   while ((match = regex.exec(lineText)) !== null) {
     if (match.index > lastIndex) {
       tokens.push({ type: "text", text: lineText.slice(lastIndex, match.index), start: lastIndex, end: match.index });
     }
-    tokens.push({ type: "highlight", text: match[1], color: match[2], start: match.index, end: regex.lastIndex });
+    tokens.push({ type: "highlight", text: match[1], color: match[2], note: match[3], start: match.index, end: regex.lastIndex });
     lastIndex = regex.lastIndex;
   }
   if (lastIndex < lineText.length) {
     tokens.push({ type: "text", text: lineText.slice(lastIndex), start: lastIndex, end: lineText.length });
   }
 
-  const chars: { char: string; color?: string; rawIndex: number }[] = [];
-  for (const token of tokens) {
+  // noteKey ties each char to the annotation of the highlight it came from,
+  // so notes survive recoloring and are re-attached when serializing.
+  const notesByKey = new Map<number, string>();
+  const chars: { char: string; color?: string; noteKey?: number; rawIndex: number }[] = [];
+  tokens.forEach((token, tokenIndex) => {
     if (token.type === "text") {
       for (let i = 0; i < token.text.length; i++) {
         chars.push({ char: token.text[i], color: undefined, rawIndex: token.start + i });
       }
     } else {
       const colorVal = token.color || "native";
+      const noteKey = token.note ? tokenIndex : undefined;
+      if (noteKey !== undefined) notesByKey.set(noteKey, token.note!);
       for (let i = 0; i < token.text.length; i++) {
-        chars.push({ char: token.text[i], color: colorVal, rawIndex: token.start + 2 + i });
+        chars.push({ char: token.text[i], color: colorVal, noteKey, rawIndex: token.start + 2 + i });
       }
     }
-  }
+  });
 
   let charSelStart = chars.findIndex(c => c.rawIndex >= C1);
   if (charSelStart === -1) charSelStart = chars.length;
@@ -114,19 +129,42 @@ function applyColorToLine(
     }
   }
 
+  // Un-highlighted text drops its annotation.
+  for (const c of chars) {
+    if (c.color === undefined) c.noteKey = undefined;
+  }
+
   let newLineText = "";
   let currentColor: string | undefined = undefined;
+  let runStart = 0;
   let newC1 = C1;
   let newC2 = C2;
+
+  // Each note is emitted once, on the first run that still contains part of its highlight.
+  const emittedNotes = new Set<number>();
+  const closingMarkup = (color: string, runEnd: number) => {
+    if (color === "native") return "==";
+    const notes: string[] = [];
+    for (let j = runStart; j < runEnd; j++) {
+      const key = chars[j].noteKey;
+      if (key !== undefined && !emittedNotes.has(key)) {
+        emittedNotes.add(key);
+        notes.push(notesByKey.get(key)!);
+      }
+    }
+    return "==" + buildColorSuffix(color, notes.join("; "));
+  };
 
   for (let i = 0; i < chars.length; i++) {
     const charColor = chars[i].color;
     if (charColor !== currentColor) {
       if (currentColor !== undefined) {
-        if (currentColor === "native") newLineText += "==";
-        else newLineText += `=={${currentColor}}`;
+        newLineText += closingMarkup(currentColor, i);
       }
-      if (charColor !== undefined) newLineText += "==";
+      if (charColor !== undefined) {
+        newLineText += "==";
+        runStart = i;
+      }
       currentColor = charColor;
     }
 
@@ -140,11 +178,45 @@ function applyColorToLine(
   if (chars.length === charSelEnd) newC2 = newLineText.length;
 
   if (currentColor !== undefined) {
-    if (currentColor === "native") newLineText += "==";
-    else newLineText += `=={${currentColor}}`;
+    newLineText += closingMarkup(currentColor, chars.length);
   }
 
   return { newLineText, handled, newC1, newC2 };
+}
+
+// Obsidian renders `==text==` as <mark> and leaves `{Color|note}` in the
+// following sibling nodes. Markdown inside a note (`#tag`, `*em*`, ...) splits
+// it across several nodes, so read siblings up to the closing `}`.
+function readColorSuffix(mark: Element) {
+  const first = mark.nextSibling;
+  if (!first || first.nodeType !== Node.TEXT_NODE || !first.textContent?.startsWith("{")) {
+    return null;
+  }
+
+  const consumed: ChildNode[] = [];
+  let raw = "";
+  for (let node: ChildNode | null = first; node; node = node.nextSibling) {
+    const text = node.textContent ?? "";
+    const close = node.nodeType === Node.TEXT_NODE ? text.indexOf("}") : -1;
+    if (close === -1) {
+      raw += text;
+      consumed.push(node);
+      continue;
+    }
+
+    raw += text.slice(0, close + 1);
+    const match = raw.match(colorSuffixAtStartRegex());
+    if (!match || match[0].length !== raw.length) return null;
+    const last = node;
+    return {
+      match,
+      remove: () => {
+        consumed.forEach((n) => n.remove());
+        last.textContent = text.slice(close + 1);
+      },
+    };
+  }
+  return null;
 }
 
 export default class HighlightrPlugin extends Plugin {
@@ -153,6 +225,7 @@ export default class HighlightrPlugin extends Plugin {
   manifest: PluginManifest;
   settings: HighlightrSettings;
   floatingMenu: FloatingMenu;
+  readingAnnotations: ReadingAnnotations;
 
   // eslint-disable-next-line @typescript-eslint/no-misused-promises -- Obsidian Plugin.onload expects void
   async onload() {
@@ -162,24 +235,28 @@ export default class HighlightrPlugin extends Plugin {
     await this.loadSettings();
 
     this.registerEditorExtension(highlightrLivePreviewPlugin(this.settings));
+    this.registerEditorExtension(annotationLivePreviewPlugin(this.settings));
+
+    this.readingAnnotations = new ReadingAnnotations(this, this.settings);
+    this.registerEvent(
+      this.app.workspace.on("layout-change", () => this.readingAnnotations.sync())
+    );
 
     this.registerMarkdownPostProcessor((element, context) => {
       const marks = element.querySelectorAll("mark");
       marks.forEach((mark) => {
-        const nextNode = mark.nextSibling;
-        if (nextNode && nextNode.nodeType === Node.TEXT_NODE) {
-          const match = nextNode.textContent?.match(/^\{([a-zA-Z0-9_\-\s]+)\}/);
-          if (match) {
-            const colorKey = match[1];
-            const color = this.settings.highlighters[colorKey];
-            if (color) {
-              mark.addClass(`hltr-${colorKey.toLowerCase().replace(/ /g, '-')}`);
-              mark.addClass("hltr");
-              mark.style.setProperty("--hltr-color", color);
-              // Remove the {color} part from text
-              nextNode.textContent = nextNode.textContent!.substring(match[0].length);
-            }
-          }
+        const suffix = readColorSuffix(mark);
+        if (!suffix) return;
+        const colorKey = suffix.match[1];
+        const note = suffix.match[2]?.trim();
+        const color = this.settings.highlighters[colorKey];
+        if (color) {
+          mark.addClass(`hltr-${colorKey.toLowerCase().replace(/ /g, '-')}`);
+          mark.addClass("hltr");
+          mark.style.setProperty("--hltr-color", color);
+          if (note) mark.dataset.hltrNote = note;
+          // Remove the {color} / {color|note} part from text
+          suffix.remove();
         }
       });
     });
@@ -195,6 +272,7 @@ export default class HighlightrPlugin extends Plugin {
       }
 
       this.generateCommands(this.editor);
+      this.readingAnnotations.sync();
     });
 
     this.addSettingTab(new HighlightrSettingTab(this.app, this));
@@ -212,6 +290,13 @@ export default class HighlightrPlugin extends Plugin {
           highlighterMenu(this.app, this.settings, editor);
         }
       },
+    });
+
+    this.addCommand({
+      id: "annotate",
+      name: "Annotate highlight",
+      icon: "highlightr-annotate",
+      editorCallback: (editor: Editor) => this.annotateHighlight(editor),
     });
 
     addEventListener("Highlightr-NewCommand", () => {
@@ -277,7 +362,7 @@ export default class HighlightrPlugin extends Plugin {
         };
 
         processRegex(/<mark.*?>(.*?)<\/mark>/g);
-        processRegex(/==(.*?)==\{[a-zA-Z0-9_\-\s]+\}/g);
+        processRegex(/==(.*?)==\{[a-zA-Z0-9_\-\s]+(?:\|[^}\n]*)?\}/g);
         processRegex(/==(.*?)==/g);
 
         if (newLineText !== lineText) {
@@ -295,6 +380,32 @@ export default class HighlightrPlugin extends Plugin {
     });
     
     editor.focus();
+  };
+
+  findAnnotatableHighlight = (editor: Editor) => {
+    for (const pos of [editor.getCursor("from"), editor.getCursor("to")]) {
+      const match = findColoredHighlightAt(editor.getLine(pos.line), pos.ch);
+      if (match) return { line: pos.line, match };
+    }
+    return null;
+  };
+
+  annotateHighlight = (editor: Editor) => {
+    const target = this.findAnnotatableHighlight(editor);
+    if (!target) {
+      new Notice("Place the cursor inside a colored highlight to annotate it");
+      return;
+    }
+
+    const { line, match } = target;
+    new AnnotationModal(this.app, match.note, (note) => {
+      editor.replaceRange(
+        buildColorSuffix(match.color, sanitizeNote(note)),
+        { line, ch: match.suffixStart },
+        { line, ch: match.end }
+      );
+      editor.focus();
+    }).open();
   };
 
   generateCommands(editor: Editor) {
@@ -435,6 +546,7 @@ export default class HighlightrPlugin extends Plugin {
     if (this.floatingMenu) {
       this.floatingMenu.destroy();
     }
+    this.readingAnnotations?.destroy();
   }
 
   handleHighlighterInContextMenu = (

@@ -1103,3 +1103,53 @@ PICKR 1.8.2 MIT | https://github.com/Simonwep/pickr
   
 }
 
+
+/* Margin annotations: Rough.js arrows + notes drawn beside the text column */
+.hltr-annotation-host {
+  position: relative;
+}
+
+.hltr-annotation-layer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 0;
+  height: 0;
+  overflow: visible;
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* Notes stay hidden until the layout pass has measured and placed them */
+.hltr-annotation-note {
+  position: absolute;
+  visibility: hidden;
+  box-sizing: border-box;
+  font-family: var(--font-text);
+  font-size: var(--font-smaller);
+  line-height: 1.45;
+  /* Tinted with the highlight color instead of a side bar, so it reads as belonging to its highlight without adding lines */
+  color: color-mix(in srgb, var(--hltr-annotation-color, var(--text-muted)) 55%, var(--text-normal));
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.hltr-annotation-note.is-placed {
+  visibility: visible;
+}
+
+.hltr-annotation-svg {
+  position: absolute;
+  overflow: visible;
+  color: var(--text-faint);
+}
+
+.hltr-annotation-marker {
+  pointer-events: auto;
+  cursor: help;
+}
+
+.hltr-annotation-input {
+  width: 100%;
+  resize: vertical;
+}

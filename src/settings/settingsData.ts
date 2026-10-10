@@ -6,6 +6,9 @@ export const HIGHLIGHTER_STYLES = [
   "realistic",
 ];
 
+// Which end(s) of an annotation's connector get an arrowhead.
+export type ArrowDirection = "to-highlight" | "to-note" | "both" | "none";
+
 export interface Highlighters {
   [color: string]: string;
 }
@@ -16,6 +19,9 @@ export interface HighlightrSettings {
   highlighters: Highlighters;
   highlighterOrder: string[];
   colorChangeMode: "entire" | "subsegment";
+  arrowDirection: ArrowDirection;
+  // 0..1: how much annotations vary in placement and in their hand-drawn strokes.
+  annotationRandomness: number;
 }
 
 const DEFAULT_SETTINGS: HighlightrSettings = {
@@ -34,6 +40,8 @@ const DEFAULT_SETTINGS: HighlightrSettings = {
   },
   highlighterOrder: [],
   colorChangeMode: "entire",
+  arrowDirection: "to-highlight",
+  annotationRandomness: 0.5,
 };
 
 DEFAULT_SETTINGS.highlighterOrder = Object.keys(DEFAULT_SETTINGS.highlighters);

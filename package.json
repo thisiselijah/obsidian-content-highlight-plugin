@@ -1,6 +1,6 @@
 {
   "name": "content-highlight",
-  "version": "2.0.0",
+  "version": "3.0.0",
   "description": "Content Highlight is a plugin that adds a simple highlighting modal for better multi-colored highlighting support 🎨.",
   "main": "main.js",
   "scripts": {
@@ -29,6 +29,7 @@
     "react": "17.0.2",
     "rollup-plugin-copy": "3.4.0",
     "rollup-plugin-css-only": "3.1.0",
+    "roughjs": "4.6.6",
     "sortablejs": "1.15.0"
   }
 }

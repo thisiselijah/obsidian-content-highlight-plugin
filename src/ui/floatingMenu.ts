@@ -75,6 +75,22 @@ export class FloatingMenu {
     
     clearBtn.title = "Remove highlight";
     this.toolbar.appendChild(clearBtn);
+
+    const annotateBtn = activeDocument.createElement("button");
+    annotateBtn.addClass("highlightr-floating-btn");
+    setIcon(annotateBtn, "highlightr-annotate");
+
+    annotateBtn.onclick = (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      if (this.app.workspace.getActiveViewOfType(MarkdownView)) {
+        this.app.commands.executeCommandById(`content-highlight:annotate`);
+        this.hide();
+      }
+    };
+
+    annotateBtn.title = "Annotate highlight";
+    this.toolbar.appendChild(annotateBtn);
   }
 
   registerEvents() {
