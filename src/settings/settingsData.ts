@@ -9,6 +9,9 @@ export const HIGHLIGHTER_STYLES = [
 // Which end(s) of an annotation's connector get an arrowhead.
 export type ArrowDirection = "to-highlight" | "to-note" | "both" | "none";
 
+// Whether annotations (note text, arrow, marker) take their highlight's color or one custom color.
+export type AnnotationColorMode = "highlight" | "custom";
+
 export interface Highlighters {
   [color: string]: string;
 }
@@ -22,6 +25,9 @@ export interface HighlightrSettings {
   arrowDirection: ArrowDirection;
   // 0..1: how much annotations vary in placement and in their hand-drawn strokes.
   annotationRandomness: number;
+  annotationColorMode: AnnotationColorMode;
+  // Hex color used when `annotationColorMode` is "custom".
+  annotationColor: string;
 }
 
 const DEFAULT_SETTINGS: HighlightrSettings = {
@@ -42,6 +48,8 @@ const DEFAULT_SETTINGS: HighlightrSettings = {
   colorChangeMode: "entire",
   arrowDirection: "to-highlight",
   annotationRandomness: 0.5,
+  annotationColorMode: "highlight",
+  annotationColor: "#7F6DF2",
 };
 
 DEFAULT_SETTINGS.highlighterOrder = Object.keys(DEFAULT_SETTINGS.highlighters);

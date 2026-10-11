@@ -9,7 +9,7 @@ import {
 } from "obsidian";
 import Pickr from "@simonwep/pickr";
 import Sortable from "sortablejs";
-import { ArrowDirection, HIGHLIGHTER_STYLES } from "./settingsData";
+import { AnnotationColorMode, ArrowDirection, HIGHLIGHTER_STYLES } from "./settingsData";
 import { ANNOTATIONS_CHANGED_EVENT } from "src/annotations/overlay";
 import { setAttributes } from "src/utils/setAttributes";
 
@@ -128,6 +128,36 @@ export class HighlightrSettingTab extends PluginSettingTab {
             dispatchEvent(new Event(ANNOTATIONS_CHANGED_EVENT));
           });
       });
+
+    new Setting(containerEl)
+      .setName("Annotation color")
+      .setDesc("Color annotations (note, arrow and marker) with their highlight's color, or with one custom color.")
+      .addDropdown((dropdown) => {
+        dropdown.addOptions({
+          "highlight": "Follow highlight color",
+          "custom": "Custom color",
+        });
+        dropdown
+          .setValue(this.plugin.settings.annotationColorMode)
+          .onChange(async (val) => {
+            this.plugin.settings.annotationColorMode = val as AnnotationColorMode;
+            annotationColorSetting.settingEl.toggle(val === "custom");
+            await this.plugin.saveSettings();
+            dispatchEvent(new Event(ANNOTATIONS_CHANGED_EVENT));
+          });
+      });
+
+    // Shown only while the annotation color is custom.
+    const annotationColorSetting = new Setting(containerEl)
+      .setName("Custom annotation color")
+      .addColorPicker((picker) => {
+        picker.setValue(this.plugin.settings.annotationColor).onChange(async (val) => {
+          this.plugin.settings.annotationColor = val;
+          await this.plugin.saveSettings();
+          dispatchEvent(new Event(ANNOTATIONS_CHANGED_EVENT));
+        });
+      });
+    annotationColorSetting.settingEl.toggle(this.plugin.settings.annotationColorMode === "custom");
 
     const highlighterSetting = new Setting(containerEl);
 

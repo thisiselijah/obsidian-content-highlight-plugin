@@ -31,6 +31,11 @@ export interface NoteSize {
   height: number;
 }
 
+// A note's size, plus one box per line of its text, relative to its top-left corner.
+export interface NoteMeasure extends NoteSize {
+  lines: Box[];
+}
+
 // The last layout of each annotation, relative to its highlight's top-left
 // corner (keyed by annotation id). `followMemory` replays it as the highlight
 // moves; a full layout starts from it.
@@ -89,6 +94,8 @@ interface Body {
   bounds: Box;
   width: number;
   height: number;
+  // The note's lines of text, relative to its top-left corner.
+  lines: Box[];
   // Note's top-left corner.
   x: number;
   y: number;
@@ -164,7 +171,7 @@ export function layoutAnnotations(
   anchors: AnnotationAnchor[],
   obstacles: Box[],
   visible: { left: number; right: number },
-  measure: (id: string, width: number | null) => NoteSize,
+  measure: (id: string, width: number | null) => NoteMeasure,
   memory: LayoutMemory = new Map(),
   // 0..1: how much notes vary in distance, direction and spot choice.
   randomness = 0
@@ -192,6 +199,7 @@ export function layoutAnnotations(
       bounds,
       width: size.width,
       height: size.height,
+      lines: size.lines,
       x: 0,
       y: 0,
       near,
@@ -267,6 +275,7 @@ export function layoutAnnotations(
 
   const routes = routeAll(placed, area, L);
   if (anyNew || bodies.some((b) => !b.settled)) uncross(placed, routes, area, L);
+  for (const body of placed) routes.set(body, alignStartToText(boxOf(body), body.lines, routes.get(body)));
 
   const placements: Placement[] = [];
   for (const body of bodies) {
@@ -353,6 +362,39 @@ function uncross(bodies: Body[], routes: Map<Body, Point[]>, area: { left: numbe
     best.body.y = best.box.top;
     routes.set(a, best.paths[0]).set(b, best.paths[1]);
   }
+}
+
+/**
+ * An arrow that leaves from a note's left or right end starts level with the
+ * middle of the nearest line of text, at that line's end, so it reads as
+ * coming out of the text rather than off the corner of the note's box. A
+ * corner start that heads off mostly up or down belongs to the top or bottom
+ * edge and stays put.
+ */
+function alignStartToText(note: Box, lines: Box[], path: Point[]): Point[] {
+  if (lines.length === 0 || path.length < 2) return path;
+  const [start, next] = path;
+  const side = start.x <= note.left ? "left" : start.x >= note.right ? "right" : null;
+  if (!side) return path;
+  const onCorner = start.y <= note.top || start.y >= note.bottom;
+  if (onCorner && Math.abs(next.y - start.y) > Math.abs(next.x - start.x)) return path;
+
+  // Same air between stroke and text as the route's start (see routeInRegion).
+  const gap = 3;
+  const placed = lines.map((l) => ({
+    left: note.left + l.left,
+    top: note.top + l.top,
+    right: note.left + l.right,
+    bottom: note.top + l.bottom,
+  }));
+  const nearest = [...placed].sort((p, q) => Math.abs(center(p).y - start.y) - Math.abs(center(q).y - start.y));
+  for (const line of nearest) {
+    const aligned = { x: side === "left" ? line.left - gap : line.right + gap, y: center(line).y };
+    // From the end of a short line, the stroke must not cut through the lines beside it.
+    if (placed.some((o) => o !== line && segmentHitsBox(aligned, next, o))) continue;
+    return [aligned, ...path.slice(1)];
+  }
+  return path;
 }
 
 function findCrossingPair(bodies: Body[], routes: Map<Body, Point[]>): [Body, Body] | null {
@@ -896,7 +938,39 @@ function routeInRegion(
   points[points.length - 1] = closestPointOnBox(lastRect, points[points.length - 1]);
 
   // Only the big turns survive; the overlay draws a spline that cuts their corners.
-  const path = simplify(points, Math.max(cell * 1.2, 0.5 * L));
+  let path = simplify(points, Math.max(cell * 1.2, 0.5 * L));
+
+  // A hand-drawn arrow leaves its note along the line of text, then turns into
+  // the highlight. In open space both corners of a one-turn route cost about
+  // the same, so one that dips first and then runs level into the highlight is
+  // swapped for its mirror image, when that way is just as clear.
+  if (path.length === 3) {
+    const [a, turn, b] = path;
+    const steepness = (p: Point, q: Point) => Math.abs(q.y - p.y) / (Math.abs(q.x - p.x) + 1);
+    if (steepness(a, turn) > steepness(turn, b)) {
+      const mirrored = { x: a.x + b.x - turn.x, y: a.y + b.y - turn.y };
+      const legCost = (p: Point, q: Point) => {
+        const steps = Math.max(1, Math.ceil(Math.hypot(q.x - p.x, q.y - p.y) / (cell / 2)));
+        let cost = 0;
+        let text = false;
+        for (let s = 0; s <= steps; s++) {
+          const col = clamp(Math.floor((p.x + ((q.x - p.x) * s) / steps - region.left) / cell), 0, cols - 1);
+          const row = clamp(Math.floor((p.y + ((q.y - p.y) * s) / steps - region.top) / cell), 0, rows - 1);
+          cost += costs[row * cols + col];
+          if (isText[row * cols + col]) text = true;
+        }
+        return { cost: (cost * Math.hypot(q.x - p.x, q.y - p.y)) / (steps + 1), text };
+      };
+      const before = legCost(a, turn).cost + legCost(turn, b).cost;
+      const first = legCost(a, mirrored);
+      const second = legCost(mirrored, b);
+      if (!first.text && !second.text && first.cost + second.cost <= before * 1.15) {
+        path = [a, mirrored, b];
+        overlap = 0;
+      }
+    }
+  }
+
   let length = 0;
   for (let k = 1; k < path.length; k++) length += Math.hypot(path[k].x - path[k - 1].x, path[k].y - path[k - 1].y);
   return { path, overlap, length };

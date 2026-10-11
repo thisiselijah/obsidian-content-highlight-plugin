@@ -6,6 +6,7 @@ import {
   layoutAnnotations,
   seededRandom,
   LayoutMemory,
+  NoteMeasure,
   NoteSize,
   Point,
 } from "src/annotations/layout";
@@ -152,7 +153,19 @@ export class AnnotationOverlay {
         height: placement.note.bottom - placement.note.top,
       });
       this.noteResizes.observe(note);
-      this.drawArrow(placement.arrow, source.color, seed, this.settings.annotationRandomness);
+      // The arrow's start is attached to the note, so it turns with the tilt
+      // (CSS rotates about the note's center, clockwise for positive angles).
+      const [start, ...rest] = placement.arrow;
+      const pivot = {
+        x: (placement.note.left + placement.note.right) / 2,
+        y: (placement.note.top + placement.note.bottom) / 2,
+      };
+      const angle = (tilt * Math.PI) / 180;
+      const tilted = {
+        x: pivot.x + (start.x - pivot.x) * Math.cos(angle) - (start.y - pivot.y) * Math.sin(angle),
+        y: pivot.y + (start.x - pivot.x) * Math.sin(angle) + (start.y - pivot.y) * Math.cos(angle),
+      };
+      this.drawArrow([tilted, ...rest], source.color, seed, this.settings.annotationRandomness);
     }
   }
 
@@ -198,7 +211,7 @@ export class AnnotationOverlay {
         // Seeded by content too, so typing elsewhere doesn't reshuffle its look.
         anchor: { id, rects, seed: hashSeed(id) },
         note,
-        color: toStrokeColor(color),
+        color: toStrokeColor(this.settings.annotationColorMode === "custom" ? this.settings.annotationColor : color),
       });
     }
     return sources;
@@ -357,11 +370,33 @@ export class AnnotationOverlay {
 }
 
 // Size of a note at `width`, or at its natural single-line width when `width` is null.
-function measureNote(note: HTMLElement, width: number | null): NoteSize {
+function measureNote(note: HTMLElement, width: number | null): NoteMeasure {
   note.style.width = width === null ? "max-content" : `${width}px`;
   const rectWidth = Math.ceil(note.getBoundingClientRect().width) + 1;
   if (width === null) note.style.width = `${rectWidth}px`;
-  return { width: width ?? rectWidth, height: note.offsetHeight };
+  return { width: width ?? rectWidth, height: note.offsetHeight, lines: textLines(note) };
+}
+
+// One box per line of a note's text, relative to its top-left corner (the
+// note isn't tilted yet when measured). Fragments sharing a line are merged.
+function textLines(note: HTMLElement): Box[] {
+  const origin = note.getBoundingClientRect();
+  const range = note.ownerDocument.createRange();
+  range.selectNodeContents(note);
+  const lines: Box[] = [];
+  for (const r of visibleRects(range.getClientRects())) {
+    const box = { left: r.left - origin.left, top: r.top - origin.top, right: r.right - origin.left, bottom: r.bottom - origin.top };
+    const line = lines.find((l) => Math.min(l.bottom, box.bottom) - Math.max(l.top, box.top) > (box.bottom - box.top) / 2);
+    if (!line) {
+      lines.push(box);
+      continue;
+    }
+    line.left = Math.min(line.left, box.left);
+    line.top = Math.min(line.top, box.top);
+    line.right = Math.max(line.right, box.right);
+    line.bottom = Math.max(line.bottom, box.bottom);
+  }
+  return lines;
 }
 
 // Triangle with its tip at `tip`, pointing away from `behind`.
@@ -410,19 +445,24 @@ function splineSegments(points: Point[]): Segment[] {
   return segments;
 }
 
-// A straight two-point route gets a slight bow so it still looks hand-drawn:
-// upward by default, scaled by `scale`, downward if `flip`.
+// A straight two-point route (from the note `a` to the highlight `b`) gets a
+// slight bow so it still looks hand-drawn, scaled by `scale`. A route that
+// climbs or descends bows toward the note's row, so the stroke leaves the note
+// along its line of text and turns into the highlight, instead of leaving at
+// an angle to it. A level route bows upward, or downward if `flip`.
 function withBow(path: Point[], scale = 1, flip = false): Point[] {
   if (path.length !== 2) return path;
   const [a, b] = path;
   const length = Math.hypot(b.x - a.x, b.y - a.y);
   let nx = (b.y - a.y) / length;
   let ny = -(b.x - a.x) / length;
-  if (ny > 0) {
+  const level = Math.abs(b.y - a.y) <= 2;
+  const side = level ? (flip ? 1 : -1) : Math.sign(a.y - b.y);
+  if (ny * side < 0) {
     nx = -nx;
     ny = -ny;
   }
-  const bow = Math.min(length * 0.12, 10) * scale * (flip ? -1 : 1);
+  const bow = Math.min(length * 0.12, 10) * scale;
   const mid = { x: (a.x + b.x) / 2 + nx * bow, y: (a.y + b.y) / 2 + ny * bow };
   // A route that climbs or descends must keep doing so (it may be crossing
   // text, which must be crossed one way only); only a level route bows up.

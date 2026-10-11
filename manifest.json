@@ -1,7 +1,7 @@
 {
   "id": "content-highlight",
   "name": "Content Highlight",
-  "version": "3.0.0",
+  "version": "3.1.0",
   "minAppVersion": "0.12.8",
   "description": "A maintained and customized fork of the Highlightr plugin by chetachi.",
   "author": "thisiselijah (Original by chetachi)",
