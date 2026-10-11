@@ -963,17 +963,6 @@ PICKR 1.8.2 MIT | https://github.com/Simonwep/pickr
   height: 20px;
 }
 
-  .cm-s-obsidian
-  .cm-highlight
-  + span.cm-formatting-highlight {
-  padding: 0.15em 0.3em;
-  -webkit-box-decoration-break: clone;
-  box-decoration-break: clone;
-  
-}
-
-}
-
 /* UI Styles for Settings and Floating Menu */
 .highlighter-style-demo {
   font-size: .925em;
